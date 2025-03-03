@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="383396f8-df9c-4303-b4e5-1731a130e54c" name="afura_fcomms">
+        <fileTransfer accessType="SFTP" host="195.201.38.255" port="2222" sshConfigId="fd3ed686-47b0-4e24-b7b8-a731d8669fc0" sshConfig="afura@195.201.38.255:2222 agent" authAgent="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
