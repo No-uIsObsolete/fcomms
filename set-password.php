@@ -15,7 +15,7 @@
     <section class="RegisterBox">
         <h2>FComms</h2>
         <section>
-            <form action="/login.php" method="post">
+            <form action="/set-password.php" method="post">
                 <p>
                     Password Reset
                 </p>
