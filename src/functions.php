@@ -30,6 +30,17 @@ function sqlResult($query)
     }
     return $result;
 }
+function sqlInsert($table, $params)
+{
+    $con = connect();
+    $keys = array_keys($params);
+    $values = array_values($params);
+
+
+    $query = "INSERT INTO $table ( ". implode(", ", $keys) ." ) VALUES ( '".implode("', '", $values)."');";
+    $sql = mysqli_query($con, $query);
+
+}
 
 function checkUsername($username)
 {
@@ -201,6 +212,39 @@ function checkLogin($user, $password)
     } else {
         return false;
     }
+}
+
+function emailExists($email)
+{
+
+    $query = "SELECT email FROM users WHERE email = '$email'";
+
+    if (!empty(sqlResult($query))) {
+        return true;
+    }
+    else {
+        return false;
+    }
+
+}
+
+function createToken($email)
+{
+
+    $query = "SELECT id FROM users WHERE email = '$email'";
+
+    $result = sqlResult($query);
+
+    if (isset($result[0]['id'])) {
+        $userid = $result[0]['id'];
+    }
+
+
+    $currentTime = date("Y-m-d H:i:s");
+    $status = 0;
+    $token = bin2hex(random_bytes(20));
+    $table = "tokens";
+    sqlInsert($table,['token'=>$token, 'userid'=>$userid, 'created_at'=>$currentTime, 'updated_at'=>$currentTime, 'status'=>$status]);
 }
 
 
