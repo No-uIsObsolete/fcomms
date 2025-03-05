@@ -2,89 +2,12 @@
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
-
-function usernameValidation($username)
-{
-    if (str_contains($username, ' ')) {
-        return false;
-    } else {
-        return true;
-    }
-}
-
-function emailValidation($email)
-{
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        return false;
-    } else {
-        return true;
-    }
-
-}
-
-function telephoneValidation($telephone)
-{
-    if ($telephone == "") {
-        return true;
-    }
-    else {
-    $telephone;
-    $find = '+';
-    $pos = strpos($telephone, $find);
-    if ($pos !== false) {
-        if  (strlen($telephone) > 7 && strlen($telephone) <= 15)  {
-            return true;
-        } else {
-            return false;
-        }
-    } else {
-        return false;
-    }
-    }
-
-    /*$pattern = "/^\+?\d{1,4}?[-.\s]?(\(?\d{1,3}?\)?[-.\s]?)?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/";
-    if (preg_match($pattern, $telephone)) {
-        return true;
-    } else {
-        return false;
-    }*/
-
-}
-
-
-function passwordValidation($password)
-{
-    if ($password >= 8 ) {
-
-    } else {
-        return false;
-    }
-}
-
-
-function passwordRepeatValidation($password, $passwordRepeat)
-{
-    if ($passwordRepeat != $password) {
-        return false;
-    } else {
-        return true;
-    }
-}
-
-function mainValidation($username, $password, $email, $firstname, $lastname)
-{
-    if (strlen($username) == 0 || strlen($password) == 0 || strlen($firstname) == 0 || strlen($lastname) == 0 || strlen($email) == 0) {
-        return false;
-    } else {
-        return true;
-    }
-}
+require 'src/functions.php';
 
 
 $errors = [];
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    echo "The request is using the POST method <br>";
+    //echo "The request is using the POST method <br>";
 //var_dump($_POST);
 //die;
 
@@ -122,9 +45,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!passwordRepeatValidation($password, $passwordRepeat)) {
         $errors['password'] = "Password isn't the same";
     }
-    if (!mainValidation($username, $password, $email, $telephone, $firstname, $lastname)) {
+    if (!mainValidation($username, $password, $email, $firstname, $lastname)) {
         $errors['main'] = "<p>Fill all the required fields</p>";
     }
+    if (!passwordValidation($password)) {
+        $errors['passwordLength'] = "Password should be at least 8 characters";
+    }
+    if (!specialCharactersValidation($password)) {
+        $errors['passwordSpecialCharacters'] = "Password should contain at least one special character";
+    }
+    if (!uppercaseCharactersValidation($password)) {
+        $errors['passwordUppercase'] = "Password should contain at least one uppercase character";
+    }
+    if (!lowercaseCharactersValidation($password)) {
+        $errors['passwordLowercase'] = "Password should contain at least one lowercase character";
+    }
+    if (!numbersValidation($password)) {
+        $errors['passwordNumber'] = "Password should contain at least one number";
+    }
+
+    if (!checkUsername($username)) {
+        $errors['usernameInUse'] = "Username already exists";
+    }
+
+    if (!checkEmail($email)) {
+        $errors['emailInUse'] = "Email already exists";
+    }
+
+
+        if (empty($errors))  {
+            addUser($username, $password, $email, $firstname, $lastname, $telephone);
+            header('Location: login.php');
+        }
+
+
+
 
 }
 ?>
@@ -159,19 +114,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" placeholder="Username" name="username" value="<?php echo $_POST['username']??'';?>">*
                     <?php if (isset($errors['username'])){
                         echo $errors['username'];
+                    }
+                    else {
+                        if (isset($errors['usernameInUse'])){echo $errors['usernameInUse'];}
                     }?><br>
+
                 <input type="text" placeholder="Firstname" name="firstname" value="<?php echo $_POST['firstname']??'';?>">* <br>
                 <input type="text" placeholder="Lastname" name="lastname" value="<?php echo $_POST['lastname']??'';?>">* <br>
                 <input type="email" placeholder="Email" name="email" value="<?php echo $_POST['email']??'';?>">*
                     <?php if (isset($errors['email'])){
                         echo $errors['email'];
+                    }
+                    else {
+                        if (isset($errors['emailInUse'])){echo $errors['emailInUse'];}
                     }?> <br>
                 <input class="TelephoneCode" type="text" placeholder="Code" name="telephone1" value="<?php echo $_POST['telephone1']??'';?>"><input
                         type="tel" placeholder="Telephone Number" class="TelephoneNumber" name="telephone2" value="<?php echo $_POST['telephone2']??'';?>">
                     <?php if (isset($errors['telephone'])){
                         echo $errors['telephone'];
                     }?><br>
-                <input type="password" placeholder="Password" name="password" value="<?php echo $_POST['password']??'';?>">* <br>
+                <input type="password" placeholder="Password" name="password" value="<?php echo $_POST['password']??'';?>">* <?php if (isset($errors['passwordLength'])){
+                        echo $errors['passwordLength'];
+                    } else {
+                        if (isset($errors['passwordLowercase'])){ echo $errors['passwordLowercase'];}
+                        else {
+                            if (isset($errors['passwordUppercase'])){ echo $errors['passwordUppercase'];}
+                            else {
+                                if (isset($errors['passwordNumber'])){ echo $errors['passwordNumber'];}
+                                else {
+                                    if (isset($errors['passwordSpecialCharacters'])){ echo $errors['passwordSpecialCharacters'];}
+                                }
+                            }
+
+
+                        }
+                    }?> <br>
+
                 <input type="password" placeholder="Repeat Password" name="passwordRepeat" value="<?php echo $_POST['passwordRepeat']??'';?>">*
                     <?php if (isset($errors['password'])){
                         echo $errors['password'];

@@ -1,6 +1,20 @@
+<?php
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+require 'src/functions.php';
+$errors = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $user = trim($_POST['user']);
+    $password = trim($_POST['password']);
+
+    if (!checkLogin($user, $password)) {
+        $errors['Invalid'] = "User or password is invalid";
+    }
+}
+?>
 <!doctype html>
-
-
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -19,7 +33,10 @@
                         <p>
                             Login
                         </p>
-                        <input type="email" placeholder="Email" name="email"> <br>
+                        <?php
+                        if (isset($errors['Invalid'])) {echo $errors['Invalid']."<br>";}
+                        ?>
+                        <input type="text" placeholder="Email or Password" name="user"> <br>
                         <input type="Password" placeholder="Password" name="password"> <br>
                         <input type="checkbox" id="RememberCheck">
                         <label for="RememberCheck">Remember Me</label> <br>
