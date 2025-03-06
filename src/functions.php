@@ -1,5 +1,12 @@
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'PHPMailer-master/src/Exception.php';
+require 'PHPMailer-master/src/PHPMailer.php';
+require 'PHPMailer-master/src/SMTP.php';
+
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
@@ -16,7 +23,7 @@ function addUser($user, $password, $email, $firstname, $lastname, $telephone)
     $hashedPassword = hash('sha256', $password);
 
 
-    $query = "INSERT INTO users (username, password, email, firstname, lastname, telephone,created_at,updated_at) values ('$user', '$hashedPassword', '$email', '$firstname', '$lastname', '$telephone', '$currentTime', '$currentTime')";
+    $query = "INSERT INTO users (username, password, email, firstname, lastname, telephone,created_at,updated_at, status) values ('$user', '$hashedPassword', '$email', '$firstname', '$lastname', '$telephone', '$currentTime', '$currentTime', 1)";
     $sql = mysqli_query($con, $query);
 }
 
@@ -38,6 +45,18 @@ function sqlInsert($table, $params)
 
 
     $query = "INSERT INTO $table ( ". implode(", ", $keys) ." ) VALUES ( '".implode("', '", $values)."');";
+    $sql = mysqli_query($con, $query);
+
+}
+
+function sqlUpdate($table, $params, $target, $targetData)
+{
+    $con = connect();
+
+
+    $query = "UPDATE $table
+                SET $params
+                WHERE $target = '$targetData'";
     $sql = mysqli_query($con, $query);
 
 }
@@ -192,26 +211,38 @@ function mainValidation($username, $password, $email, $firstname, $lastname)
     }
 }
 
+function getUserId($user, $password)
+{
+    $hashedPassword = hash('sha256', $password);
+    $query = "SELECT users.id FROM users where (username = '$user' or email = '$user') AND password = '$hashedPassword'";
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return $result[0]['id'];
+    }
 
+}
 function checkLogin($user, $password)
 {
-    $con = connect();
-    $hashedPassword = hash('sha256', $password);
-    $query = "SELECT username, email, `password` FROM users where (username = '$user' or email = '$user') and password = '$hashedPassword'";
-    $sql = mysqli_query($con, $query);
-    if ($sql->num_rows > 0) {
 
-        while ($row = $sql->fetch_assoc()) {
-            $hash = $row['password'];
-            if ($row['email'] == $user || $row['username'] == $user && password_verify($password, $hash) == true) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    } else {
-        return false;
+    $hashedPassword = hash('sha256', $password);
+    $query = "SELECT id, username, email, `password`, status FROM users where (username = '$user' or email = '$user') AND password = '$hashedPassword'";
+    $result = sqlResult($query);
+
+    if (isset($result[0])) {
+    if ($result[0]['status'] == 1) {
+        return "Success";
     }
+    else {
+        return "The user is has not been activated or has been banned.";
+    }
+    }
+    else {
+        return "The parameters are wrong or this user does not exist.";
+    }
+
+
+
+
 }
 
 function emailExists($email)
@@ -244,7 +275,96 @@ function createToken($email)
     $status = 0;
     $token = bin2hex(random_bytes(20));
     $table = "tokens";
-    sqlInsert($table,['token'=>$token, 'userid'=>$userid, 'created_at'=>$currentTime, 'updated_at'=>$currentTime, 'status'=>$status]);
+    $query2 = "SELECT users.email FROM users, tokens WHERE email = '$email' AND tokens.userid = users.id AND tokens.created_at > DATE_SUB( '$currentTime', INTERVAL 15 MINUTE )";
+    $result2 = sqlResult($query2);
+
+    if (isset($result2[0]))
+    {
+        return "Token already exists, please check your email";
+    }
+    else
+    {
+        sqlInsert($table, ['token' => $token, 'userid' => $userid, 'created_at' => $currentTime, 'updated_at' => $currentTime, 'status' => $status]);
+        SendPasswordResetEmail($token);
+        return "Your token request has been sent to your email";
+}
+}
+
+function checkToken($password, $token)
+{
+
+    $hashedPassword = hash('sha256', $password);
+    $currentTime = date("Y-m-d H:i:s");
+    $status = 1;
+
+    $table = "users";
+    $table2 = "tokens";
+
+    $query = "SELECT users.id, tokens.status FROM users, tokens WHERE token = '$token' AND tokens.userid = users.id AND tokens.status = 0 AND tokens.created_at > DATE_SUB( '$currentTime', INTERVAL 15 MINUTE )";
+    $result = sqlResult($query);
+
+    $target = "id";
+
+    $target2 = "token";
+
+    $params = "password = '$hashedPassword'";
+    $params2 =  "tokens.status = '$status', tokens.updated_at = '$currentTime'";
+
+
+    if (isset($result[0]))
+    {
+        $targetData = $result[0]['id'];
+        sqlUpdate($table, $params, $target, $targetData);
+        sqlUpdate($table2, $params2, $target2, $token);
+        return "Successfully changed your password <br>";
+    }
+    else
+    {
+
+
+        return "Password token already expired or used <br>";
+    }
+}
+function SendPasswordResetEmail($token)
+{
+    $mail = new PHPMailer(true);
+
+    try {
+        //Server settings
+//        $mail->SMTPDebug = \PHPMailer\PHPMailer\SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+        $mail->isSMTP();                                            //Send using SMTP
+        $mail->Host       = 'mail30.mydevil.net';                     //Set the SMTP server to send through
+        $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+        $mail->Username   = 'a.fura@kgtech.pl';                     //SMTP username
+        $mail->Password   = '3nT+uJ[4F]50uGm*pbYLWoq9hCN9A3';                               //SMTP password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
+        $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+        //Recipients
+        $mail->setFrom('a.fura@kgtech.pl', 'PasswordResetAutobot');
+        $mail->addAddress('a.fura@kgtech.pl', 'Andrzej Fura');     //Add a recipient
+        //$mail->addAddress('ellen@example.com');               //Name is optional
+        //$mail->addReplyTo('info@example.com', 'Information');
+        //$mail->addCC('cc@example.com');
+        //$mail->addBCC('bcc@example.com');
+
+        //Attachments
+        //$mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
+        //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    //Optional name
+
+        //Content
+        $mail->isHTML(true);                                  //Set email format to HTML
+        $mail->Subject = 'Password Reset';
+        $mail->Body    = '<h1> &nbsp; Forgot Your Password? </h1> &nbsp; This is your password reset authorization token: 
+        <a href="http://fcomms.website/reset-password.php?token='.$token.'">
+        Reset Password</a> <br> <br> <br> &nbsp; If This is not you please ignore this email. <br> <br>';
+        //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+        $mail->send();
+        //echo 'Message has been sent';
+    } catch (Exception $e) {
+       //echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
 }
 
 

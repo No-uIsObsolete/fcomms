@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Register</title>
 
-    <link rel="stylesheet" href="/assets/css/fcomms-register.css">
+    <link rel="stylesheet" href="/assets/css/register-style.css">
 
 
 </head>

@@ -4,7 +4,7 @@ ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 require 'src/functions.php';
 $errors = [];
-$alert = [];
+$alert = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST["email"];
@@ -13,8 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['emailNotExist'] = "This email doesn't exist";
     }
     else {
-        createToken($email);
-        $alert['1'] = "Your request has been sent to your email";
+        $alert = createToken($email);
     }
 }
 
@@ -42,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="email" placeholder="Email" name="email"> <?php if (isset($errors['emailNotExist'])) {
                     echo $errors['emailNotExist'];
                 } else {
-                    if (isset($alert['1'])) $alert['1'];
+                    echo $alert;
                 }?><br>
                 <input type="submit" value="Send Email">
             </form>
