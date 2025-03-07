@@ -4,7 +4,7 @@ ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 require 'src/functions.php';
     //$errors = [];
-session_start();
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = trim($_POST['user']);
@@ -16,15 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $checkLogin = checkLogin($user, $password);
 
     if ($checkLogin = "Success") {
-        $_SESSION['userid'] = getUserId($user, $password);
-        $website = "/dashboard.php";
-    }
-    else
-    {
-
-        $website = "/login.php";
-    }
+        $_SESSION['user'] = getUser($user, $password);
+            header('Location: index.php');
+        }
 }
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -33,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <meta name="viewport"
               content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet" href="/assets/css/login-style.css">
+       <link rel="stylesheet" href="/assets/css/login-style.css">
         <title>Login</title>
 
     </head>
@@ -46,14 +42,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h2>FComms</h2>
                 </section>
                     <section class="login-box-content">
-                        <form action="<?php echo $website; ?>" method="post">
+                        <form action="/login.php" method="post">
                             <section class="content-top">
                             <p class="content-centered">
                                 Login
                             </p>
                             <input type="text" placeholder="Email or Password" name="user" class="input-centered"> <br>
                             <input type="Password" placeholder="Password" name="password" class="input-centered"> <br>
-                            <input type="checkbox" name="rememberCheck" class="input-checkbox"> <?php if (isset($checkLogin)) {echo $checkLogin;} ?>
+                            <?php if (isset($checkLogin)) {echo $checkLogin;} ?> <br>
+                            <input type="checkbox" name="rememberCheck" class="input-checkbox">
                             <label for="rememberCheck" class="input-label">Remember Me</label> <br>
                             </section>
                             <section class="content-bottom">

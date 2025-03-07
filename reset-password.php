@@ -26,27 +26,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Password Reset</title>
-
+    <link rel="stylesheet" href="/assets/css/passreset-style.css">
 </head>
 <body>
-<main>
-    <section class="RegisterBox">
+<header><h1>FComms</h1></header>
+<aside></aside>
+    <main>
+        <section class="passreset-box">
+        <section class="passreset-box-header">
         <h2>FComms</h2>
-        <section>
+        </section>
+        <section class="passreset-box-content">
             <form action="/reset-password.php" method="post">
-                <p>
-                    Forgot Password?
+                <section>
+                <p class="content-centered">
+                    Forgot Password? <br>
+                    Type in your email to receive an email with password reset authorization
                 </p>
-                Type email here: <br>
-                <input type="email" placeholder="Email" name="email"> <?php if (isset($errors['emailNotExist'])) {
+
+                <input type="email" placeholder="Email" class="input-centered" name="email"> <?php if (isset($errors['emailNotExist'])) {
                     echo $errors['emailNotExist'];
                 } else {
                     echo $alert;
                 }?><br>
-                <input type="submit" value="Send Email">
+                </section>
+                <section class="content-bottom">
+                <input type="submit" class="sign-button-reset" value="Send Email">
+                 </section>
             </form>
         </section>
-    </section>
-</main>
+        </section>
+    </main>
+<aside></aside>
+<footer></footer>
 </body>
 </html>

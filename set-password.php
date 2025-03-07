@@ -47,18 +47,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Password Reset</title>
+    <link rel="stylesheet" href="/assets/css/passreset-style.css">
 
 </head>
 <body>
+<header><h1>FComms</h1></header>
+<aside></aside>
 <main>
-    <section class="RegisterBox">
+    <section class="passreset-box">
+        <section class="passreset-box-header">
         <h2>FComms</h2>
-        <section>
+        </section>
+        <section class="passreset-box-content">
             <form action="/set-password.php?token=<?php echo $token;?>" method="post">
-                <p>
+                <section class="content-top">
+                <p class="content-centered">
                     Password Reset
                 </p>
-                <input type="password" placeholder="New Password" name="password"> <?php if (isset($errors['passwordLength'])){
+                <input type="password" placeholder="New Password" class="input-centered" name="password"> <?php if (isset($errors['passwordLength'])){
                     echo $errors['passwordLength'];
                 } else {
                     if (isset($errors['passwordLowercase'])){ echo $errors['passwordLowercase'];}
@@ -74,12 +80,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     }
                 }?><br>
-                <input type="password" placeholder="Repeat New Password" name="passwordRepeat"> <br>
+                <input type="password" placeholder="Repeat New Password" class="input-centered" name="passwordRepeat"> <br>
                 <?php echo $alert ?>
-                <input type="submit" value="Reset Password">
+                </section>
+                <section class="content-bottom">
+                <input type="submit" class="sign-button" value="Reset Password">
+                </section>
             </form>
         </section>
     </section>
 </main>
+<aside></aside>
+<footer></footer>
 </body>
 </html>

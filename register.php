@@ -99,19 +99,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </head>
 <body>
+<header><h1>FComms</h1></header>
+<aside></aside>
 <main>
-    <section class="RegisterBox">
+    <section class="register-box">
+        <section class="register-box-header">
         <h2>FComms</h2>
-        <section>
+        </section>
+        <section  class="register-box-content">
             <form action="/register.php" method="post">
-                <p>
+                <section class="content-top">
+                <p class="content-centered">
                     Register
                 </p>
-                <section>
+
                     <?php if (isset($errors['main'])){
                     echo $errors['main'];
                     } ?>
-                <input type="text" placeholder="Username" name="username" value="<?php echo $_POST['username']??'';?>">*
+                <input type="text" placeholder="Username" name="username" class="input-centered" value="<?php echo $_POST['username']??'';?>">*
                     <?php if (isset($errors['username'])){
                         echo $errors['username'];
                     }
@@ -119,21 +124,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if (isset($errors['usernameInUse'])){echo $errors['usernameInUse'];}
                     }?><br>
 
-                <input type="text" placeholder="Firstname" name="firstname" value="<?php echo $_POST['firstname']??'';?>">* <br>
-                <input type="text" placeholder="Lastname" name="lastname" value="<?php echo $_POST['lastname']??'';?>">* <br>
-                <input type="email" placeholder="Email" name="email" value="<?php echo $_POST['email']??'';?>">*
+                <input type="text" placeholder="Firstname" name="firstname" class="input-centered" value="<?php echo $_POST['firstname']??'';?>">* <br>
+                <input type="text" placeholder="Lastname" name="lastname" class="input-centered" value="<?php echo $_POST['lastname']??'';?>">* <br>
+                <input type="email" placeholder="Email" name="email" class="input-centered" value="<?php echo $_POST['email']??'';?>">*
                     <?php if (isset($errors['email'])){
                         echo $errors['email'];
                     }
                     else {
                         if (isset($errors['emailInUse'])){echo $errors['emailInUse'];}
                     }?> <br>
-                <input class="TelephoneCode" type="text" placeholder="Code" name="telephone1" value="<?php echo $_POST['telephone1']??'';?>"><input
-                        type="tel" placeholder="Telephone Number" class="TelephoneNumber" name="telephone2" value="<?php echo $_POST['telephone2']??'';?>">
+                <input class="telephone-code" type="text" placeholder="Code" name="telephone1" value="<?php echo $_POST['telephone1']??'';?>"><input
+                        type="tel" placeholder="Telephone Number" class="telephone-number" name="telephone2" value="<?php echo $_POST['telephone2']??'';?>">
                     <?php if (isset($errors['telephone'])){
                         echo $errors['telephone'];
                     }?><br>
-                <input type="password" placeholder="Password" name="password" value="<?php echo $_POST['password']??'';?>">* <?php if (isset($errors['passwordLength'])){
+                <input type="password" placeholder="Password" class="input-centered" name="password" value="<?php echo $_POST['password']??'';?>">* <?php if (isset($errors['passwordLength'])){
                         echo $errors['passwordLength'];
                     } else {
                         if (isset($errors['passwordLowercase'])){ echo $errors['passwordLowercase'];}
@@ -150,16 +155,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     }?> <br>
 
-                <input type="password" placeholder="Repeat Password" name="passwordRepeat" value="<?php echo $_POST['passwordRepeat']??'';?>">*
+                <input type="password" placeholder="Repeat Password" class="input-centered" name="passwordRepeat" value="<?php echo $_POST['passwordRepeat']??'';?>">*
                     <?php if (isset($errors['password'])){
                         echo $errors['password'];
                     } ?> <br>
-                <input type="submit" value="Sign up">
-                </section>
-            </form>
-
+                    </section>
+                    <section class="content-bottom">
+                <input type="submit" class="sign-button" value="Sign up">
+                    </section>
         </section>
+            </form>
     </section>
+    </section>
+
 </main>
+<aside></aside>
+<footer></footer>
 </body>
 </html>

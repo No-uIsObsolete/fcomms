@@ -33,7 +33,7 @@ h1, h2 {
     font-weight: bold;
     font-variant: small-caps;
 }
-section.register-box
+section.passreset-box
 {
     background-color: aliceblue;
     border: solid 2px lightsteelblue;
@@ -45,7 +45,7 @@ section.register-box
     padding: 20px;
     border-radius: 4px;
 }
-.register-box-header {
+.passreset-box-header {
     height: 10%;
     max-width: 100%;
     text-align: center;
@@ -54,14 +54,14 @@ section.register-box
     padding-top: 5%;
     border: 2px solid seagreen;
 }
-.register-box-content {
+.passreset-box-content {
     height: 90%;
     max-width: 100%;
 }
 .content-top {
     height: 45%;
     max-width: 100%;
-    margin-bottom: 2%;
+    margin-bottom: 30%;
 
 }
 .content-bottom {
@@ -89,6 +89,29 @@ section.register-box
     color: whitesmoke;
     transition: 0.25s;
 }
+
+.sign-button-reset {
+    padding: 10px;
+    float: right;
+    background-color: #0f5132;
+    color: white;
+    border-radius: 4px;
+    border: none;
+    box-shadow: none;
+    z-index: 10;
+    transition: 0.25s;
+    margin-top: 43%;
+}
+
+.sign-button-reset:hover {
+    padding: 10px;
+    float: right;
+    background-color: #146c43;
+    color: whitesmoke;
+    transition: 0.25s;
+}
+
+
 .content-centered {
     text-align: center;
     padding-bottom: 2%;
@@ -96,30 +119,8 @@ section.register-box
 }
 .input-centered {
     max-width: 100%;
-    min-width: 95.5%;
-    padding: 2px;
-    border-radius: 4px;
-    border: 2px lightgray solid;
-    box-shadow: 2px 2px 4px 1px #a7acb1 inset;
-    height: 25px;
-    background-color: whitesmoke;
-    margin-bottom: 10px;
-}
-.telephone-code {
-    max-width: 10%;
-    min-width: 9.55%;
-    padding: 2px;
-    border-radius: 4px;
-    border: 2px lightgray solid;
-    box-shadow: 2px 2px 4px 1px #a7acb1 inset;
-    height: 25px;
-    background-color: whitesmoke;
-    margin-bottom: 10px;
-}
-.telephone-number {
-    max-width: 90%;
-    min-width: 84%;
-    padding: 2px;
+    min-width: 97.5%;
+    padding: 5px;
     border-radius: 4px;
     border: 2px lightgray solid;
     box-shadow: 2px 2px 4px 1px #a7acb1 inset;

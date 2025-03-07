@@ -11,6 +11,8 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
+session_start();
+
 function connect()
 {
     return mysqli_connect("195.201.38.255", "afura_fcomms", ")Pc8p[fEpO+Qy:6*", "afura_fcomms");
@@ -18,13 +20,13 @@ function connect()
 
 function addUser($user, $password, $email, $firstname, $lastname, $telephone)
 {
-    $con = connect();
+
     $currentTime = date("Y-m-d H:i:s");
     $hashedPassword = hash('sha256', $password);
 
 
     $query = "INSERT INTO users (username, password, email, firstname, lastname, telephone,created_at,updated_at, status) values ('$user', '$hashedPassword', '$email', '$firstname', '$lastname', '$telephone', '$currentTime', '$currentTime', 1)";
-    $sql = mysqli_query($con, $query);
+    sqlResult($query);
 }
 
 function sqlResult($query)
@@ -63,15 +65,14 @@ function sqlUpdate($table, $params, $target, $targetData)
 
 function checkUsername($username)
 {
-    $con = connect();
+
     $query = "SELECT username FROM users WHERE username = '$username'";
-    $sql = mysqli_query($con, $query);
-    if ($sql->num_rows > 0) {
-        while ($row = $sql->fetch_assoc()) {
-            if ($row['username'] == $username) {
-                return false;
-            }
-        }
+    $result = sqlResult($query);
+    if (isset ($result[0])) {
+       if ($result[0]['username'] == $username) {
+           return false;
+       }
+
     } else {
         return true;
     }
@@ -80,15 +81,13 @@ function checkUsername($username)
 
 function checkEmail($email)
 {
-    $con = connect();
     $query = "SELECT email FROM users WHERE email = '$email'";
-    $sql = mysqli_query($con, $query);
-    if ($sql->num_rows > 0) {
-        while ($row = $sql->fetch_assoc()) {
-            if ($row['email'] == $email) {
-                return false;
-            }
+    $result = sqlResult($query);
+    if (isset ($result[0])) {
+        if ($result[0]['email'] == $email) {
+            return false;
         }
+
     } else {
         return true;
     }
@@ -211,13 +210,13 @@ function mainValidation($username, $password, $email, $firstname, $lastname)
     }
 }
 
-function getUserId($user, $password)
+function getUser($user, $password)
 {
     $hashedPassword = hash('sha256', $password);
-    $query = "SELECT users.id FROM users where (username = '$user' or email = '$user') AND password = '$hashedPassword'";
+    $query = "SELECT * FROM users where (username = '$user' or email = '$user') AND password = '$hashedPassword' LIMIT 1";
     $result = sqlResult($query);
     if (isset($result[0])) {
-        return $result[0]['id'];
+        return $result[0];
     }
 
 }
@@ -356,7 +355,7 @@ function SendPasswordResetEmail($token)
         $mail->isHTML(true);                                  //Set email format to HTML
         $mail->Subject = 'Password Reset';
         $mail->Body    = '<h1> &nbsp; Forgot Your Password? </h1> &nbsp; This is your password reset authorization token: 
-        <a href="http://fcomms.website/reset-password.php?token='.$token.'">
+        <a href="http://fcomms.website/set-password.php?token='.$token.'">
         Reset Password</a> <br> <br> <br> &nbsp; If This is not you please ignore this email. <br> <br>';
         //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
