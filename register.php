@@ -4,6 +4,16 @@ ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 require 'src/functions.php';
 
+if (isset($_SESSION['user'])) {
+    //echo "<pre>";
+    //var_dump($_SESSION['user']); die;
+
+
+
+    header('Location: index.php');
+
+}
+
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -82,6 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 }
+
+
 ?>
 <!doctype html>
 
@@ -161,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     } ?> <br>
                     </section>
                     <section class="content-bottom">
-                <input type="submit" class="sign-button" value="Sign up">
+                        <input type="reset" class="reset-button" value="Reset"><input type="submit" class="sign-button" value="Sign up">
                     </section>
         </section>
             </form>

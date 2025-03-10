@@ -90,25 +90,48 @@ section.passreset-box
     transition: 0.25s;
 }
 
-.sign-button-reset {
+.sign-button {
     padding: 10px;
     float: right;
     background-color: #0f5132;
     color: white;
-    border-radius: 4px;
+    border-radius: 4px 0 0 4px;
     border: none;
     box-shadow: none;
     z-index: 10;
     transition: 0.25s;
-    margin-top: 43%;
+    border-right: rgba(255, 255, 255, 0.5) 1px dashed;
 }
 
-.sign-button-reset:hover {
+.sign-button:hover {
     padding: 10px;
     float: right;
     background-color: #146c43;
     color: whitesmoke;
     transition: 0.25s;
+    border-right-color: rgba(245, 245, 245, 0.5);
+}
+
+.reset-button {
+    padding: 10px;
+    float: right;
+    background-color: #0f5132;
+    color: white;
+    border-radius: 0 4px 4px 0;
+    border: none;
+    box-shadow: none;
+    z-index: 10;
+    transition: 0.25s;
+    border-left: rgba(255, 255, 255, 0.5) 1px dashed;
+}
+
+.reset-button:hover {
+    padding: 10px;
+    float: right;
+    background-color: #146c43;
+    color: whitesmoke;
+    transition: 0.25s;
+    border-left-color: rgba(245, 245, 245, 0.5);
 }
 
 

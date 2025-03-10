@@ -6,6 +6,9 @@ require 'src/functions.php';
 $errors = [];
 $alert = '';
 $token = $_GET['token'];
+if (empty($token)) {
+    header('Location: login.php');
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
@@ -32,6 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $alert = checkToken($password, $token);
+
+
 
 
 }
@@ -84,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php echo $alert ?>
                 </section>
                 <section class="content-bottom">
-                <input type="submit" class="sign-button" value="Reset Password">
+                    <input type="reset" class="reset-button" value="Reset"><input type="submit" class="sign-button" value="Reset Password">
                 </section>
             </form>
         </section>

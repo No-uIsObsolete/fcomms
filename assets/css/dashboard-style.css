@@ -24,7 +24,7 @@ header {
 main {
     background-color: #2b2f32;
     width: 65%;
-    height: 920px;
+    height: 960px;
     float: left;
 }
 
@@ -61,6 +61,7 @@ h3 {
     overflow: scroll;
     margin-top: 3px;
     margin-bottom: 3px;
+    border-radius: 2px;
 }
 
 ::-webkit-scrollbar {
@@ -102,3 +103,30 @@ main > .containers {
     margin-left: 2px;
     margin-right: 2px;
 }
+#group-container {
+    margin-top: 4px;
+}
+
+.group-ul, .friend-list-ul {
+    list-style-type: none;
+}
+
+.group-li, .friend-list-li {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.pfp {
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    margin-right: 10px;
+    vertical-align: baseline;
+}
+.group-icon {
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    margin-right: 10px;
+    vertical-align: baseline;
+}
+

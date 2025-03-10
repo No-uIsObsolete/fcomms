@@ -238,10 +238,6 @@ function checkLogin($user, $password)
     else {
         return "The parameters are wrong or this user does not exist.";
     }
-
-
-
-
 }
 
 function emailExists($email)
@@ -365,6 +361,64 @@ function SendPasswordResetEmail($token)
        //echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }
 }
+
+function getFriends($user)
+{
+$query = "SELECT main_user_id, friend_user_id, firstname, lastname, profile_picture FROM friendlist, users WHERE main_user_id = '$user' AND friend_user_id = users.id AND status = 1 ORDER BY firstname";
+$result = sqlResult($query);
+if (isset($result[0])) {
+return $result;
+}
+else {
+    return "No friends available";
+}
+}
+
+function getGroups($user)
+{
+    $query = "SELECT group_user_id, group_id , group_name FROM groups, groups_and_users, users WHERE group_user_id = '$user' AND group_user_id = users.id AND group_id = groups.id ORDER BY group_name";
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return $result;
+    }
+    else {
+        return "No groups available";
+    }
+}
+
+
+
+function searchUsers($user, $mainUserId)
+{
+    $userLowCase = strtolower($user);
+
+    $query = "SELECT id, firstname, lastname, profile_picture 
+                FROM users
+                WHERE  LOWER(firstname) LIKE '$userLowCase%' or LOWER(lastname) LIKE '$userLowCase%' AND status = 1 
+                AND users.id <> '$mainUserId'";
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return $result;
+    }
+    else {
+        return "User Doesn't Exist";
+    }
+}
+
+function searchGroups($group)
+{
+    $groupLowCase = strtolower($group);
+
+    $query = "SELECT group_name FROM groups WHERE LOWER(group_name) LIKE '$groupLowCase%'";
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return $result;
+    }
+    else {
+        return "Group Doesn't Exist";
+    }
+}
+
 
 
 

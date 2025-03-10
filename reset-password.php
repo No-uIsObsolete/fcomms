@@ -6,6 +6,16 @@ require 'src/functions.php';
 $errors = [];
 $alert = '';
 
+if (isset($_SESSION['user'])) {
+    //echo "<pre>";
+    //var_dump($_SESSION['user']); die;
+
+
+
+    header('Location: index.php');
+
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST["email"];
 

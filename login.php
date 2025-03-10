@@ -4,11 +4,21 @@ ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 require 'src/functions.php';
     //$errors = [];
+if (isset($_SESSION['user'])) {
+    //echo "<pre>";
+    //var_dump($_SESSION['user']); die;
 
 
+
+    header('Location: index.php');
+
+}
+//phpinfo(); die;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = trim($_POST['user']);
     $password = trim($_POST['password']);
+
+    $checkbox = trim($_POST['rememberCheck']);
 
 
 
@@ -16,10 +26,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $checkLogin = checkLogin($user, $password);
 
     if ($checkLogin = "Success") {
+        //if (!empty($checkbox)) {
+        //    setcookie("user", $user.", ".$password, time() + (86400 * 30), "/");
+        //}
         $_SESSION['user'] = getUser($user, $password);
             header('Location: index.php');
         }
+
 }
+
+
 
 ?>
 <!doctype html>
@@ -50,13 +66,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="text" placeholder="Email or Password" name="user" class="input-centered"> <br>
                             <input type="Password" placeholder="Password" name="password" class="input-centered"> <br>
                             <?php if (isset($checkLogin)) {echo $checkLogin;} ?> <br>
-                            <input type="checkbox" name="rememberCheck" class="input-checkbox">
+                            <input type="checkbox" name="rememberCheck[]" class="input-checkbox" value="rememberMe">
                             <label for="rememberCheck" class="input-label">Remember Me</label> <br>
                             </section>
                             <section class="content-bottom">
                             New to FComms? <a href="register.php">Register</a> <br>
                             <a href="reset-password.php">Forgot my password</a>
-                            <input type="submit" class="sign-button" value="Sign in"> <br>
+                                <input type="reset" class="reset-button" value="Reset"><input type="submit" class="sign-button" value="Sign in"> <br>
                             </section>
                         </form>
                     </section>
