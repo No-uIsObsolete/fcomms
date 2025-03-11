@@ -44,7 +44,7 @@ else {
         <label>
             Add more: <input type="text" placeholder="Search" name="friendSearch">
         </label>
-            <input type="submit" value="Search"><input type="reset" value="Reset">
+            <input type="submit" value="Search">
         </form>
         <hr>
         <section>
@@ -72,11 +72,11 @@ else {
     </section>
     <section class="containers" id="group-container">
         <h3>Groups</h3>
-        <form method="post">
+        <form form method="get" action="users.php">
             <label>
-                Join more: <input type="text" placeholder="Search" name="friendSearch">
+                Join more: <input type="text" placeholder="Search" name="groupSearch">
             </label>
-            <input type="submit" value="Search"><input type="reset" value="Reset">
+            <input type="submit" value="Search">
         </form>
         <hr>
         <section>
@@ -117,7 +117,10 @@ else {
 </section>
 </aside>
 <footer>
+<script src="assets/js/jquery.js"></script>
+<script type="text/javascript">
 
+</script>
 </footer>
 </body>
 </html>

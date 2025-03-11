@@ -25,8 +25,9 @@ function addUser($user, $password, $email, $firstname, $lastname, $telephone)
     $hashedPassword = hash('sha256', $password);
 
 
-    $query = "INSERT INTO users (username, password, email, firstname, lastname, telephone,created_at,updated_at, status) values ('$user', '$hashedPassword', '$email', '$firstname', '$lastname', '$telephone', '$currentTime', '$currentTime', 1)";
-    sqlResult($query);
+    $table = 'users';
+    sqlInsert($table, ['username' => $user, 'password' => $hashedPassword, 'email' => $email, 'firstname' => $firstname, 'lastname' => $lastname,
+                       'telephone' => $telephone, 'created_at' => $currentTime, 'updated_at' => $currentTime, 'status' => 1]);
 }
 
 function sqlResult($query)
@@ -62,6 +63,23 @@ function sqlUpdate($table, $params, $target, $targetData)
     $sql = mysqli_query($con, $query);
 
 }
+function sqlDelete($table,$params)
+{
+    $con = connect();
+    // = array_keys($params);
+    //$values = array_values($params);
+    $tmp = '';
+    foreach ($params as $key => $value) {
+        $tmp .= $key.' = "'.$value.'" AND ';
+        //var_dump($key);
+        //var_dump($value);
+
+    }
+    $tmp = rtrim($tmp, ' AND ');
+    $query = "DELETE FROM $table WHERE $tmp ";
+    $sql = mysqli_query($con, $query);
+}
+
 
 function checkUsername($username)
 {
@@ -364,7 +382,7 @@ function SendPasswordResetEmail($token)
 
 function getFriends($user)
 {
-$query = "SELECT main_user_id, friend_user_id, firstname, lastname, profile_picture FROM friendlist, users WHERE main_user_id = '$user' AND friend_user_id = users.id AND status = 1 ORDER BY firstname";
+$query = "SELECT main_user_id, friend_user_id, firstname, lastname, profile_picture FROM friend_list, users WHERE main_user_id = '$user' AND friend_user_id = users.id AND status = 1 ORDER BY firstname";
 $result = sqlResult($query);
 if (isset($result[0])) {
 return $result;
@@ -392,34 +410,68 @@ function searchUsers($user, $mainUserId)
 {
     $userLowCase = strtolower($user);
 
-    $query = "SELECT id, firstname, lastname, profile_picture 
-                FROM users
-                WHERE  LOWER(firstname) LIKE '$userLowCase%' or LOWER(lastname) LIKE '$userLowCase%' AND status = 1 
-                AND users.id <> '$mainUserId'";
+    $query = "SELECT id, firstname, lastname, profile_picture, 
+              IF(friend_list.main_user_id>0, 1, 0) AS is_friend
+              FROM users
+              LEFT JOIN friend_list
+              ON users.id = friend_list.friend_user_id AND friend_list.main_user_id = $mainUserId
+              WHERE  LOWER(firstname) LIKE '%$userLowCase%' or LOWER(lastname) LIKE '%$userLowCase%' AND status = 1 
+              AND users.id <> '$mainUserId';";
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
     }
     else {
-        return "User Doesn't Exist";
+
+     return 'No users found';
     }
 }
 
-function searchGroups($group)
+function searchGroups($group, $mainUserId)
 {
     $groupLowCase = strtolower($group);
 
-    $query = "SELECT group_name FROM groups WHERE LOWER(group_name) LIKE '$groupLowCase%'";
+    $query = "SELECT group_name, IF(group_user_id.main_user_id>0, 1, 0) AS is_a_member
+              FROM groups
+              LEFT JOIN groups_and_users
+              ON group.id = groups_and_users.group_id AND group_user_id = $mainUserId 
+              WHERE LOWER(group_name) LIKE '$groupLowCase%';";
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
     }
     else {
-        return "Group Doesn't Exist";
+        return "No groups found";
     }
 }
 
+function friendDelete($userId, $friendId)
+{
+    sqlDelete('friend_list', ['main_user_id' => $userId, 'friend_user_id' => $friendId]);
+    sqlDelete('friend_list', ['main_user_id' => $friendId, 'friend_user_id' => $userId]);
 
 
+}
+function friendAdd($userId, $friendId)
+{
+    $currentTime = date("Y-m-d H:i:s");
+    sqlInsert('friend_request', ['from_user_id' => $userId, 'to_user_id' => $friendId, 'request_date' => $currentTime, 'request_status' => 1]);
+}
+
+function searchPending($mainUserId) {
+
+$query = "SELECT  to_user_id, request_status, IF(friend_request.from_user_id>0,1,0) AS pending
+          FROM friend_request 
+          LEFT JOIN users
+          ON users.id = friend_request.to_user_id AND friend_request.from_user_id = $mainUserId 
+          WHERE request_status = 1";
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return $result;
+    }
+    else {
+        return "No pending friend requests available";
+    }
+}
 
 
