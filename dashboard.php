@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
 require 'src/functions.php';
 //$errors = [];
 if (isset($_SESSION['user'])) {
@@ -72,7 +69,7 @@ else {
     </section>
     <section class="containers" id="group-container">
         <h3>Groups</h3>
-        <form form method="get" action="users.php">
+        <form form method="get" action="groups.php">
             <label>
                 Join more: <input type="text" placeholder="Search" name="groupSearch">
             </label>
@@ -113,6 +110,8 @@ else {
 <aside class="setting-box">
 <section class="containers">
     <h3>Account Settings</h3>
+    <a href="/settings.php">Settings</a> <br>
+    <br>
     <a href="/logout.php">Logout</a>
 </section>
 </aside>

@@ -17,7 +17,6 @@ if (isset($_SESSION['user'])) {
     //echo "<pre>";
     //var_dump($list);
 
-    $pendingResult = searchPending($userid);
 
 
 
@@ -52,28 +51,19 @@ else {
             <h2>FComms</h2>
         </section>
         <section>
-            <h3>Friends:</h3>
+            <h3>Search Results:</h3>
             <?php
             foreach ($list as $i=> $user) {
-                if ($user['is_friend']==1) {
-                    echo '<section>'.$user['firstname'] . " " . $user['lastname'] . " <input type='button' data-friend-id='".$user['id']."' value='Unfriend' class='un-friend'> <br></section>";
+                if ($user['is_friend'] == 1) {
+                    echo '<section>' . $user['firstname'] . " " . $user['lastname'] . " <input type='button' data-friend-id='" . $user['id'] . "' value='Unfriend' class='un-friend'> </section><br>";
                 }
-            }
-            ?>
-        </section>
-        <section>
-            <h3>Other users:</h3>
-            <?php
-            foreach ($list as $i=> $user) {
-                if ($user['is_friend']==0) {
-                    foreach ($pendingResult as $i=> $result) {
-                        if ($result['pending']==0) {
-                        echo '<section>' . $user['firstname'] . " " . $user['lastname'] . " <input type='button' data-friend-id='" . $user['id'] . "' value='Add friend' class='add-friend'> <br></section>";
-                        }
-                        else {
-                            echo '<section>' . $user['firstname'] . " " . $user['lastname'] . " <input type='button' data-friend-id='" . $user['id'] . "' value='Request pending' class='blocked' disabled> <br></section>";
-                        }
-                    }
+                elseif ($user['request_pending'] == 1) {
+                    echo '<section>' . $user['firstname'] . " " . $user['lastname'] . " <input type='button' data-friend-id='" . $user['id'] . "' value='Request Pending' class='blocked' disabled> 
+                    <input type='button' data-friend-id='" . $user['id'] . "' value='Remove request' class='remove-request'></section><br>";
+                }
+                else {
+
+                    echo '<section>' . $user['firstname'] . " " . $user['lastname'] . " <input type='button' data-friend-id='" . $user['id'] . "' value='Add Friend' class='add-friend'> </section><br>";
                 }
             }
             ?>
@@ -85,10 +75,10 @@ else {
 <footer><script src="assets/js/jquery.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
-            $(".un-friend").click(function(){
+            $(document).on('click', '.un-friend', function(){
                 let obj = $(this)
             console.log($(this).attr('data-friend-id'))
-                $.post("ajax-test.php",
+                $.post("ajax.php",
                     {
                         friend_id: $(this).attr('data-friend-id'),
                         action: "remove_friend"
@@ -97,16 +87,20 @@ else {
                         console.log(data.status);
                         if (typeof data.status !== 'undefined' && data.status === 'success')
                         {
-                            obj.parent().remove().alert('Success')
+                            obj.attr('value', "Add Friend")
+                            obj.attr('class', "add-friend")
+
+
+                            alert('Success')
 
                         }
                     });
             });
 
-            $(".add-friend").click(function(){
+            $(document).on('click', '.add-friend', function(){
                 let obj = $(this)
                 console.log($(this).attr('data-friend-id'))
-                $.post("ajax-test.php",
+                $.post("ajax.php",
                     {
                         friend_id: $(this).attr('data-friend-id'),
                         action: "add_friend"
@@ -115,13 +109,43 @@ else {
                         console.log(data.status);
                         if (typeof data.status !== 'undefined' && data.status === 'success')
                         {
-                           obj.attr({value: "Request Pending", class: "blocked", disabled})
+                           obj.attr('value', "Request Pending")
+                           obj.attr('class', "blocked")
+                           obj.attr('disabled', true)
+                           obj.after(" <input type='button' data-friend-id='"+$(this).attr('data-friend-id')+"' value='Remove Request' class='remove-request'>")
 
                             alert('Success')
 
                         }
                     });
             });
+
+            $(document).on('click', '.remove-request', function(){
+                let obj = $(this)
+                console.log($(this).attr('data-friend-id'))
+                $.post("ajax.php",
+                    {
+                        friend_id: $(this).attr('data-friend-id'),
+                        action: "remove_request"
+                    },
+                    function(data){
+                        console.log(data.status);
+                        if (typeof data.status !== 'undefined' && data.status === 'success')
+                        {
+                            obj.prev('.blocked').attr('value', "Add Friend")
+                            obj.prev('.blocked').removeAttr("disabled")
+                            obj.prev('.blocked').attr('class', "add-friend")
+
+                            obj.remove()
+
+                            alert('Success')
+
+                        }
+                    });
+            });
+
+
+
         });
     </script></footer>
 

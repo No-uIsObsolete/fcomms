@@ -410,13 +410,15 @@ function searchUsers($user, $mainUserId)
 {
     $userLowCase = strtolower($user);
 
-    $query = "SELECT id, firstname, lastname, profile_picture, 
+    $query = "SELECT id, firstname, lastname, profile_picture, IF(friend_request.request_status>0, 1, 0) as request_pending, 
               IF(friend_list.main_user_id>0, 1, 0) AS is_friend
               FROM users
               LEFT JOIN friend_list
               ON users.id = friend_list.friend_user_id AND friend_list.main_user_id = $mainUserId
-              WHERE  LOWER(firstname) LIKE '%$userLowCase%' or LOWER(lastname) LIKE '%$userLowCase%' AND status = 1 
-              AND users.id <> '$mainUserId';";
+              LEFT JOIN friend_request
+              ON users.id = friend_request.to_user_id AND friend_request.from_user_id = $mainUserId 
+              WHERE  (LOWER(firstname) LIKE '%$userLowCase%' or LOWER(lastname) LIKE '%$userLowCase%') AND users.status = 1 
+              AND users.id <> '$mainUserId' AND users.private_account = 0 GROUP BY users.id;";
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
@@ -427,15 +429,19 @@ function searchUsers($user, $mainUserId)
     }
 }
 
-function searchGroups($group, $mainUserId)
+function searchGroups($group, $userId)
 {
     $groupLowCase = strtolower($group);
 
-    $query = "SELECT group_name, IF(group_user_id.main_user_id>0, 1, 0) AS is_a_member
+    $query = "SELECT groups.id, group_name,
+			  IF(groups_and_users.group_user_id>0, 1, 0) AS member, 
+			  IF(group_join_request.from_user_id>0, 1, 0) as join_request
               FROM groups
               LEFT JOIN groups_and_users
-              ON group.id = groups_and_users.group_id AND group_user_id = $mainUserId 
-              WHERE LOWER(group_name) LIKE '$groupLowCase%';";
+              ON groups_and_users.group_id = groups.id  AND groups_and_users.group_user_id = $userId
+              LEFT JOIN group_join_request
+              ON group_join_request.group_id = groups.id AND group_join_request.from_user_id = $userId
+              WHERE groups.is_private = 0 AND LOWER(group_name) LIKE '%$group%' GROUP BY groups.id;";
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
@@ -458,20 +464,44 @@ function friendAdd($userId, $friendId)
     sqlInsert('friend_request', ['from_user_id' => $userId, 'to_user_id' => $friendId, 'request_date' => $currentTime, 'request_status' => 1]);
 }
 
-function searchPending($mainUserId) {
-
-$query = "SELECT  to_user_id, request_status, IF(friend_request.from_user_id>0,1,0) AS pending
-          FROM friend_request 
-          LEFT JOIN users
-          ON users.id = friend_request.to_user_id AND friend_request.from_user_id = $mainUserId 
-          WHERE request_status = 1";
-    $result = sqlResult($query);
-    if (isset($result[0])) {
-        return $result;
-    }
-    else {
-        return "No pending friend requests available";
-    }
+function removeRequest($userId, $friendId)
+{
+    sqlDelete('friend_request', ['from_user_id' => $userId, 'to_user_id' => $friendId]);
 }
+
+function leaveGroup($userId, $groupId)
+{
+    sqlDelete('groups_and_users', ['group_user_id' => $userId, 'group_id' => $groupId]);
+}
+function joinGroup($userId, $groupId)
+{
+    $currentTime = date("Y-m-d H:i:s");
+    sqlInsert('group_join_request', ['from_user_id' => $userId, 'group_id' => $groupId, 'request_date' => $currentTime, 'request_status' => 1]);
+}
+
+function removeJoinRequest($userId, $groupId)
+{
+    sqlDelete('group_join_request', ['from_user_id' => $userId, 'group_id' => $groupId]);
+}
+
+function deleteUser($userId)
+{
+    $closedToken = bin2hex(random_bytes(20));
+    $query = "SELECT users.id, users.username, users.email, users.status FROM users where users.id = '$userId';";
+    $result = sqlResult($query);
+    $email = $result[0]['email']."-closed".$closedToken;
+    $username = $result[0]['username']."-closed".$closedToken;
+    $target = "id";
+    $params = "status = '0', email = '$email', username = '$username'";
+    sqlUpdate('users', $params, $target, $userId);
+}
+function privateAccount($userId, $data)
+{
+    $target = "id";
+    $params = "private_account = '$data'";
+    sqlUpdate('users', $params, $target, $userId);
+}
+
+
 
 

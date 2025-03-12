@@ -13,7 +13,6 @@ if (isset($_SESSION['user'])) {
     //var_dump($_SESSION['user']); die;
 
     session_unset();
-
     session_destroy();
 
 

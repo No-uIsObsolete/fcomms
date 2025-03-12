@@ -130,11 +130,11 @@ section.register-box
     margin-bottom: 10px;
 }
 .telephone-code {
-    max-width: 10%;
-    min-width: 9.55%;
+    width: 10%;
     padding: 2px;
-    border-radius: 4px;
+    border-radius: 4px 0 0 4px;
     border: 2px lightgray solid;
+    border-right: 1px solid lightgray;
     box-shadow: 2px 2px 4px 1px #a7acb1 inset;
     height: 25px;
     background-color: whitesmoke;
@@ -142,10 +142,11 @@ section.register-box
 }
 .telephone-number {
     max-width: 90%;
-    min-width: 84%;
+    min-width: 84.5%;
     padding: 2px;
-    border-radius: 4px;
+    border-radius: 0 4px 4px 0;
     border: 2px lightgray solid;
+    border-left: 1px solid lightgray;
     box-shadow: 2px 2px 4px 1px #a7acb1 inset;
     height: 25px;
     background-color: whitesmoke;
