@@ -7,11 +7,15 @@ if (isset($_SESSION['user'])) {
     $userid = $_SESSION['user']['id'];
     $friendResult = getFriends($userid);
     $groupResult = getGroups($userid);
+    $postResult = getPosts($userid);
+
 }
 else {
     header('Location: index.php');
 }
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $postData = $_POST['postTextArea'];
+}
 
 
 
@@ -103,7 +107,52 @@ else {
 </aside>
 <main>
 <section class="containers">
-    <h3>Feed</h3>
+    <h3>Feed</h3> <br>
+    <section>
+        <hr>
+        <form method="post" action="/dashboard.php">
+        <textarea name="postTextArea" placeholder="Your post here" cols="168" rows="3" ></textarea><input type="submit" value="Post">
+            <?php
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (isset($postData) && !empty($postData)) {
+                    addPost($userid, $postData, 1);
+                } else {
+                    echo "Post is empty";
+                }
+            }
+                ?>
+        </form>
+        <hr>
+            <?php
+
+
+
+    if ($postResult != "No posts found") {
+        foreach ($postResult as $i=> $post) {
+            echo '<section><h4>'.$post['firstname'].' '.$post['lastname'].'</h4>';
+            echo '<sup>'.$post['created_at'].'</sup> <br>';
+            echo $post['post_content'].'<br>';
+            foreach (getReactionTypes() as $i => $reactionType) {
+                if (isset($post[$reactionType['name']."_reaction"])) {
+                    echo $post[$reactionType['name']."_reaction"].' ';
+                }
+            echo '<img class="likes" src="'.$reactionType['icon'].'" like-type-id="'.$reactionType['id'].'" post-id="'.$post["id"].'"> ';
+            }
+//            <img class="likes"src="/assets/css/dislike.png" like-type-id="0" post-id="'.$post["id"].'">
+//            <img class="likes"src="/assets/css/laughingface.png" like-type-id="2" post-id="'.$post["id"].'">
+//            <img class="likes"src="/assets/css/neutralface.png" like-type-id="3" post-id="'.$post["id"].'">
+//            <img class="likes"src="/assets/css/sadface.png" like-type-id="4" post-id="'.$post["id"].'">
+            echo '</section><hr>';
+        }
+
+    }
+    else {
+        echo "No posts found";
+    }
+
+
+    ?>
+    </section>
 </section>
 
 </main>
@@ -118,6 +167,28 @@ else {
 <footer>
 <script src="assets/js/jquery.js"></script>
 <script type="text/javascript">
+    $(document).ready(function(){
+    $(document).on('click', '.likes', function(){
+        let obj = $(this)
+        //console.log($(this).attr('for-post'))
+        //console.log($(this).attr('like-value'))
+        $.post("ajax.php",
+            {
+                post_id: $(this).attr('post-id'),
+                like_type_id: $(this).attr('like-type-id'),
+                action: "like"
+            },
+            function(data){
+                console.log(data);
+                if (typeof data.status !== 'undefined' && data.status === 'success')
+                {
+
+
+                }
+            });
+    });
+    });
+
 
 </script>
 </footer>

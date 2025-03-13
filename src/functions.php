@@ -502,6 +502,63 @@ function privateAccount($userId, $data)
     sqlUpdate('users', $params, $target, $userId);
 }
 
+function getReactionTypes()
+{
+    return sqlResult("SELECT * FROM reaction_types");
+}
+
+function getPosts($mainUserId)
+{
 
 
+    $reactionCols = array_map(function($item){
+        return "SUM(CASE WHEN rt.id = {$item['id']} THEN 1 ELSE 0 END) AS {$item['name']}_reaction";
+        }, getReactionTypes());
 
+    $query = "SELECT posts.id, users.id AS post_user_id, post_content, post_type, posts.created_at, firstname, lastname, profile_picture , ".implode(', ', $reactionCols)."
+              FROM posts
+              LEFT JOIN users 
+              ON posts.user_id = users.id
+              LEFT JOIN reactions
+              ON posts.id = reactions.post_id
+              LEFT JOIN reaction_types rt
+              ON reactions.type_id = rt.id
+              WHERE (posts.user_id IN(SELECT friend_user_id FROM friend_list WHERE main_user_id = $mainUserId) OR posts.user_id = $mainUserId) AND users.status = 1 GROUP BY posts.id ORDER BY posts.created_at DESC
+              ";
+//    echo "<pre>";
+//    var_dump($query); die;
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return $result;
+    }
+    else {
+        return "No posts found";
+    }
+}
+function addPost($userId, $data, $type)
+{
+    $currentTime = date("Y-m-d H:i:s");
+    sqlInsert('posts', ['user_id' => $userId, 'post_content' => $data, 'post_type' => $type, 'created_at' => $currentTime, 'updated_at' => $currentTime]);
+}
+
+//function randomUser()
+//{
+//    $query = "SELECT id FROM users WHERE id>12 ORDER BY RAND() LIMIT 1
+//              ";
+//    $result = sqlResult($query);
+//    $data = bin2hex(random_bytes(30));
+//    posts($result[0]['id'],$data,1);
+//}
+//function posts($userId, $data, $type)
+//{
+//    $currentTime = date("Y-m-d H:i:s");
+//    sqlInsert('posts', ['user_id' => $userId, 'post_content' => $data, 'post_type' => $type, 'created_at' => $currentTime, 'updated_at' => $currentTime]);
+//}
+
+function addReaction($postId, $likeTypeId, $userId)
+{
+    $con = connect();
+    $query = "INSERT INTO reactions (post_id, from_user_id, type_id, enabled) VALUES ($postId,$userId,$likeTypeId, 1)
+                ON DUPLICATE KEY UPDATE ENABLED = IF(TYPE <> $likeTypeId, 1,IF(ENABLED=1, 0, 1)), type_id= ".$likeTypeId.";";
+    $sql = mysqli_query($con, $query);
+}

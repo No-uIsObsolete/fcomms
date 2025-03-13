@@ -3,7 +3,12 @@
     padding: 0;
     font-family: monospace, "Lucida Console";
 }
-
+.likes {
+    margin-top: 5px;
+    width: 15px;
+    height: 15px;
+    filter: invert(100%);
+}
 body {
     background-color: #2b2f32;
 
@@ -70,7 +75,7 @@ h3 {
 
 ::-webkit-scrollbar-thumb {
     background: #4d5154;
-    border-radius: 5px;
+    border-radius: 3px;
     transition: 0.2s;
 }
 ::-webkit-scrollbar-track {
