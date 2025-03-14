@@ -40,35 +40,32 @@ else {
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>User Search</title>
+    <link rel="stylesheet" href="assets/css/search-style.css">
 </head>
 <body>
 <header><h1>FComms</h1></header>
 <aside></aside>
 <main>
-    <section>
-        <section>
-            <h2>FComms</h2>
-        </section>
-        <section>
+
+        <section class="containers">
             <h3>Groups:</h3>
             <?php
             foreach ($list as $i=> $group) {
                 if ($group['member'] == 1) {
-                    echo $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Leave Group' class='leave-group'> 
-                    </section><br>";
+                    echo '<br>'. $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Leave Group' class='leave-group'> 
+                    </section><br><hr>";
                 }
                 elseif ($group['join_request'] == 1) {
-                    echo $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Request pending' class='blocked' disabled> 
-                    <input type='button' data-group-id='" . $group['id'] . "' value='Remove request' class='remove-join-request'></section><br>";
+                    echo '<br>'. $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Request pending' class='blocked' disabled> 
+                    <input type='button' data-group-id='" . $group['id'] . "' value='Remove request' class='remove-join-request'></section><br><hr>";
                 }
                 else {
-                    echo $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Join Group' class='join-group'> 
-                    </section><br>";
+                    echo '<br>'. $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Join Group' class='join-group'> 
+                    </section><br><hr>";
                 }
             }
             ?>
         </section>
-    </section>
 
 </main>
 <aside></aside>

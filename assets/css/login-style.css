@@ -90,6 +90,7 @@ section.login-box
     color: whitesmoke;
     transition: 0.25s;
     border-right-color: rgba(245, 245, 245, 0.5);
+    cursor:pointer;
 }
 
 .reset-button {
@@ -112,6 +113,7 @@ section.login-box
     color: whitesmoke;
     transition: 0.25s;
     border-left-color: rgba(245, 245, 245, 0.5);
+    cursor:pointer;
 }
 .content-centered {
     text-align: center;

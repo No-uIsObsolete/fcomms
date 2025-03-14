@@ -27,7 +27,7 @@ function addUser($user, $password, $email, $firstname, $lastname, $telephone)
 
     $table = 'users';
     sqlInsert($table, ['username' => $user, 'password' => $hashedPassword, 'email' => $email, 'firstname' => $firstname, 'lastname' => $lastname,
-                       'telephone' => $telephone, 'created_at' => $currentTime, 'updated_at' => $currentTime, 'status' => 1]);
+        'telephone' => $telephone, 'created_at' => $currentTime, 'updated_at' => $currentTime, 'status' => 1]);
 }
 
 function sqlResult($query)
@@ -40,6 +40,7 @@ function sqlResult($query)
     }
     return $result;
 }
+
 function sqlInsert($table, $params)
 {
     $con = connect();
@@ -47,7 +48,7 @@ function sqlInsert($table, $params)
     $values = array_values($params);
 
 
-    $query = "INSERT INTO $table ( ". implode(", ", $keys) ." ) VALUES ( '".implode("', '", $values)."');";
+    $query = "INSERT INTO $table ( " . implode(", ", $keys) . " ) VALUES ( '" . implode("', '", $values) . "');";
     $sql = mysqli_query($con, $query);
 
 }
@@ -63,14 +64,15 @@ function sqlUpdate($table, $params, $target, $targetData)
     $sql = mysqli_query($con, $query);
 
 }
-function sqlDelete($table,$params)
+
+function sqlDelete($table, $params)
 {
     $con = connect();
     // = array_keys($params);
     //$values = array_values($params);
     $tmp = '';
     foreach ($params as $key => $value) {
-        $tmp .= $key.' = "'.$value.'" AND ';
+        $tmp .= $key . ' = "' . $value . '" AND ';
         //var_dump($key);
         //var_dump($value);
 
@@ -87,9 +89,9 @@ function checkUsername($username)
     $query = "SELECT username FROM users WHERE username = '$username'";
     $result = sqlResult($query);
     if (isset ($result[0])) {
-       if ($result[0]['username'] == $username) {
-           return false;
-       }
+        if ($result[0]['username'] == $username) {
+            return false;
+        }
 
     } else {
         return true;
@@ -238,6 +240,7 @@ function getUser($user, $password)
     }
 
 }
+
 function checkLogin($user, $password)
 {
 
@@ -246,14 +249,12 @@ function checkLogin($user, $password)
     $result = sqlResult($query);
 
     if (isset($result[0])) {
-    if ($result[0]['status'] == 1) {
-        return "Success";
-    }
-    else {
-        return "The user is has not been activated or has been banned.";
-    }
-    }
-    else {
+        if ($result[0]['status'] == 1) {
+            return "Success";
+        } else {
+            return "The user is has not been activated or has been banned.";
+        }
+    } else {
         return "The parameters are wrong or this user does not exist.";
     }
 }
@@ -265,8 +266,7 @@ function emailExists($email)
 
     if (!empty(sqlResult($query))) {
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 
@@ -291,16 +291,13 @@ function createToken($email)
     $query2 = "SELECT users.email FROM users, tokens WHERE email = '$email' AND tokens.userid = users.id AND tokens.created_at > DATE_SUB( '$currentTime', INTERVAL 15 MINUTE )";
     $result2 = sqlResult($query2);
 
-    if (isset($result2[0]))
-    {
+    if (isset($result2[0])) {
         return "Token already exists, please check your email";
-    }
-    else
-    {
+    } else {
         sqlInsert($table, ['token' => $token, 'userid' => $userid, 'created_at' => $currentTime, 'updated_at' => $currentTime, 'status' => $status]);
         SendPasswordResetEmail($token);
         return "Your token request has been sent to your email";
-}
+    }
 }
 
 function checkToken($password, $token)
@@ -321,23 +318,21 @@ function checkToken($password, $token)
     $target2 = "token";
 
     $params = "password = '$hashedPassword'";
-    $params2 =  "tokens.status = '$status', tokens.updated_at = '$currentTime'";
+    $params2 = "tokens.status = '$status', tokens.updated_at = '$currentTime'";
 
 
-    if (isset($result[0]))
-    {
+    if (isset($result[0])) {
         $targetData = $result[0]['id'];
         sqlUpdate($table, $params, $target, $targetData);
         sqlUpdate($table2, $params2, $target2, $token);
         return "Successfully changed your password <br>";
-    }
-    else
-    {
+    } else {
 
 
         return "Password token already expired or used <br>";
     }
 }
+
 function SendPasswordResetEmail($token)
 {
     $mail = new PHPMailer(true);
@@ -346,12 +341,12 @@ function SendPasswordResetEmail($token)
         //Server settings
 //        $mail->SMTPDebug = \PHPMailer\PHPMailer\SMTP::DEBUG_SERVER;                      //Enable verbose debug output
         $mail->isSMTP();                                            //Send using SMTP
-        $mail->Host       = 'mail30.mydevil.net';                     //Set the SMTP server to send through
-        $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-        $mail->Username   = 'a.fura@kgtech.pl';                     //SMTP username
-        $mail->Password   = '3nT+uJ[4F]50uGm*pbYLWoq9hCN9A3';                               //SMTP password
+        $mail->Host = 'mail30.mydevil.net';                     //Set the SMTP server to send through
+        $mail->SMTPAuth = true;                                   //Enable SMTP authentication
+        $mail->Username = 'a.fura@kgtech.pl';                     //SMTP username
+        $mail->Password = '3nT+uJ[4F]50uGm*pbYLWoq9hCN9A3';                               //SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
-        $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+        $mail->Port = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
         //Recipients
         $mail->setFrom('a.fura@kgtech.pl', 'PasswordResetAutobot');
@@ -368,28 +363,27 @@ function SendPasswordResetEmail($token)
         //Content
         $mail->isHTML(true);                                  //Set email format to HTML
         $mail->Subject = 'Password Reset';
-        $mail->Body    = '<h1> &nbsp; Forgot Your Password? </h1> &nbsp; This is your password reset authorization token: 
-        <a href="http://fcomms.website/set-password.php?token='.$token.'">
+        $mail->Body = '<h1> &nbsp; Forgot Your Password? </h1> &nbsp; This is your password reset authorization token: 
+        <a href="http://fcomms.website/set-password.php?token=' . $token . '">
         Reset Password</a> <br> <br> <br> &nbsp; If This is not you please ignore this email. <br> <br>';
         //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
         $mail->send();
         //echo 'Message has been sent';
     } catch (Exception $e) {
-       //echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        //echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }
 }
 
 function getFriends($user)
 {
-$query = "SELECT main_user_id, friend_user_id, firstname, lastname, profile_picture FROM friend_list, users WHERE main_user_id = '$user' AND friend_user_id = users.id AND status = 1 ORDER BY firstname";
-$result = sqlResult($query);
-if (isset($result[0])) {
-return $result;
-}
-else {
-    return "No friends available";
-}
+    $query = "SELECT main_user_id, friend_user_id, firstname, lastname, profile_picture FROM friend_list, users WHERE main_user_id = '$user' AND friend_user_id = users.id AND status = 1 ORDER BY firstname";
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return $result;
+    } else {
+        return "No friends available";
+    }
 }
 
 function getGroups($user)
@@ -398,12 +392,10 @@ function getGroups($user)
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
-    }
-    else {
+    } else {
         return "No groups available";
     }
 }
-
 
 
 function searchUsers($user, $mainUserId)
@@ -422,10 +414,9 @@ function searchUsers($user, $mainUserId)
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
-    }
-    else {
+    } else {
 
-     return 'No users found';
+        return 'No users found';
     }
 }
 
@@ -445,8 +436,7 @@ function searchGroups($group, $userId)
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
-    }
-    else {
+    } else {
         return "No groups found";
     }
 }
@@ -458,10 +448,11 @@ function friendDelete($userId, $friendId)
 
 
 }
+
 function friendAdd($userId, $friendId)
 {
     $currentTime = date("Y-m-d H:i:s");
-    sqlInsert('friend_request', ['from_user_id' => $userId, 'to_user_id' => $friendId, 'request_date' => $currentTime, 'request_status' => 1]);
+    sqlInsert('friend_request', ['from_user_id' => $userId, 'to_user_id' => $friendId, 'request_date' => $currentTime, 'request_status' => 0]);
 }
 
 function removeRequest($userId, $friendId)
@@ -473,6 +464,7 @@ function leaveGroup($userId, $groupId)
 {
     sqlDelete('groups_and_users', ['group_user_id' => $userId, 'group_id' => $groupId]);
 }
+
 function joinGroup($userId, $groupId)
 {
     $currentTime = date("Y-m-d H:i:s");
@@ -489,12 +481,13 @@ function deleteUser($userId)
     $closedToken = bin2hex(random_bytes(20));
     $query = "SELECT users.id, users.username, users.email, users.status FROM users where users.id = '$userId';";
     $result = sqlResult($query);
-    $email = $result[0]['email']."-closed".$closedToken;
-    $username = $result[0]['username']."-closed".$closedToken;
+    $email = $result[0]['email'] . "-closed" . $closedToken;
+    $username = $result[0]['username'] . "-closed" . $closedToken;
     $target = "id";
     $params = "status = '0', email = '$email', username = '$username'";
     sqlUpdate('users', $params, $target, $userId);
 }
+
 function privateAccount($userId, $data)
 {
     $target = "id";
@@ -511,16 +504,16 @@ function getPosts($mainUserId)
 {
 
 
-    $reactionCols = array_map(function($item){
+    $reactionCols = array_map(function ($item) {
         return "SUM(CASE WHEN rt.id = {$item['id']} THEN 1 ELSE 0 END) AS {$item['name']}_reaction";
-        }, getReactionTypes());
+    }, getReactionTypes());
 
-    $query = "SELECT posts.id, users.id AS post_user_id, post_content, post_type, posts.created_at, firstname, lastname, profile_picture , ".implode(', ', $reactionCols)."
+    $query = "SELECT posts.id, users.id AS post_user_id, post_content, post_type, posts.created_at, firstname, lastname, profile_picture , " . implode(', ', $reactionCols) . "
               FROM posts
               LEFT JOIN users 
               ON posts.user_id = users.id
               LEFT JOIN reactions
-              ON posts.id = reactions.post_id
+              ON posts.id = reactions.post_id AND reactions.enabled = 1
               LEFT JOIN reaction_types rt
               ON reactions.type_id = rt.id
               WHERE (posts.user_id IN(SELECT friend_user_id FROM friend_list WHERE main_user_id = $mainUserId) OR posts.user_id = $mainUserId) AND users.status = 1 GROUP BY posts.id ORDER BY posts.created_at DESC
@@ -530,11 +523,11 @@ function getPosts($mainUserId)
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
-    }
-    else {
+    } else {
         return "No posts found";
     }
 }
+
 function addPost($userId, $data, $type)
 {
     $currentTime = date("Y-m-d H:i:s");
@@ -558,7 +551,39 @@ function addPost($userId, $data, $type)
 function addReaction($postId, $likeTypeId, $userId)
 {
     $con = connect();
-    $query = "INSERT INTO reactions (post_id, from_user_id, type_id, enabled) VALUES ($postId,$userId,$likeTypeId, 1)
-                ON DUPLICATE KEY UPDATE ENABLED = IF(TYPE <> $likeTypeId, 1,IF(ENABLED=1, 0, 1)), type_id= ".$likeTypeId.";";
-    $sql = mysqli_query($con, $query);
+    $query = "INSERT INTO reactions (post_id, from_user_id, type_id, enabled) VALUES ($postId, $userId, $likeTypeId, 1)
+                ON DUPLICATE KEY UPDATE ENABLED = IF(type_id <> $likeTypeId, 1,IF(ENABLED=1, 0, 1)), type_id= " . $likeTypeId . ";";
+    mysqli_query($con, $query);
+}
+
+function getPostReactions($postId)
+{
+    $query = <<<EOF
+SELECT r.type_id, rt.`name`, COUNT(rt.id) AS count FROM reactions r
+LEFT JOIN reaction_types rt
+ON r.type_id = rt.id
+WHERE r.enabled = 1 AND r.post_id = {$postId} GROUP BY rt.`name`
+EOF;
+    $reactionCounts = array();
+    foreach (sqlResult($query) as $reactionCount) {
+        $reactionCounts[$reactionCount['type_id']] = $reactionCount;
+    }
+    $reactions = [];
+    foreach (getReactionTypes() as $i => $reactionType) {
+        $reactionType['count'] = 0;
+        if (isset($reactionCounts[$reactionType['id']])) {
+            $reactionType['count'] = $reactionCounts[$reactionType['id']]['count'];
+        }
+        $reactions[$reactionType['id']] = $reactionType;
+    }
+    return $reactions;
+}
+
+function requestGet($MainUserId)
+{
+    $query = "SELECT friend_request.from_user_id, request_date, firstname, lastname  FROM  friend_request
+              LEFT JOIN users
+              ON friend_request.from_user_id = users.id  
+              WHERE users.status = 1 AND friend_request.to_user_id = ".$MainUserId." AND friend_request.request_status = 0 ";
+
 }

@@ -41,35 +41,30 @@ else {
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>User Search</title>
+    <link rel="stylesheet" href="assets/css/search-style.css">
 </head>
 <body>
 <header><h1>FComms</h1></header>
 <aside></aside>
 <main>
-    <section>
-        <section>
-            <h2>FComms</h2>
-        </section>
-        <section>
-            <h3>Search Results:</h3>
+        <section class="containers">
+            <h3>Search Results:</h3> <hr>
             <?php
             foreach ($list as $i=> $user) {
                 if ($user['is_friend'] == 1) {
-                    echo '<section>' . $user['firstname'] . " " . $user['lastname'] . " <input type='button' data-friend-id='" . $user['id'] . "' value='Unfriend' class='un-friend'> </section><br>";
+                    echo '<br><section>' . $user['firstname'] . " " . $user['lastname'] . " <input type='button' data-friend-id='" . $user['id'] . "' value='Unfriend' class='un-friend'> </section><br><hr>";
                 }
                 elseif ($user['request_pending'] == 1) {
-                    echo '<section>' . $user['firstname'] . " " . $user['lastname'] . " <input type='button' data-friend-id='" . $user['id'] . "' value='Request Pending' class='blocked' disabled> 
-                    <input type='button' data-friend-id='" . $user['id'] . "' value='Remove request' class='remove-request'></section><br>";
+                    echo '<br><section>' . $user['firstname'] . " " . $user['lastname'] . " <input type='button' data-friend-id='" . $user['id'] . "' value='Request Pending' class='blocked' disabled> 
+                    <input type='button' data-friend-id='" . $user['id'] . "' value='Remove request' class='remove-request'></section><br><hr>";
                 }
                 else {
 
-                    echo '<section>' . $user['firstname'] . " " . $user['lastname'] . " <input type='button' data-friend-id='" . $user['id'] . "' value='Add Friend' class='add-friend'> </section><br>";
+                    echo '<br><section>' . $user['firstname'] . " " . $user['lastname'] . " <input type='button' data-friend-id='" . $user['id'] . "' value='Add Friend' class='add-friend'> </section><br><hr>";
                 }
             }
             ?>
         </section>
-    </section>
-
 </main>
 <aside></aside>
 <footer><script src="assets/js/jquery.js"></script>

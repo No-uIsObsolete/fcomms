@@ -6,39 +6,35 @@ require 'src/functions.php';
 
 if (isset($_SESSION['user'])) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
+        $data = ['status' => 'success'];
         $action = $_POST['action'];
 
         $userid = $_SESSION['user']['id'];
         switch ($action) {
             case 'remove_friend':
-                $data = $_POST['friend_id'];
-                friendDelete($userid, $data);
+                friendDelete($userid, $_POST['friend_id']);
                 break;
             case 'add_friend':
-                $data = $_POST['friend_id'];
-                friendAdd($userid, $data);
+                friendAdd($userid, $_POST['friend_id']);
                 break;
             case 'remove_request':
-                $data = $_POST['friend_id'];
-                removeRequest($userid, $data);
+                removeRequest($userid, $_POST['friend_id']);
                 break;
             case 'leave_group':
-                $data = $_POST['group_id'];
-                leaveGroup($userid, $data);
+                leaveGroup($userid, $_POST['group_id']);
                 break;
             case 'join_group':
-                $data = $_POST['group_id'];
-                joinGroup($userid, $data);
+                joinGroup($userid, $_POST['group_id']);
                 break;
             case 'remove_join_request':
-                $data = $_POST['group_id'];
-                removeJoinRequest($userid, $data);
+                removeJoinRequest($userid, $_POST['group_id']);
                 break;
-            case 'like':
+            case 'change_reaction':
                 $postId = $_POST['post_id'];
                 $likeTypeId = $_POST['like_type_id'];
-                likes($postId, $likeTypeId, $userid);
+                addReaction($postId, $likeTypeId, $userid);
+                $data['data'] = getPostReactions($postId);
+
                 break;
 //            case 'delete_user':
 //                if ($data == 0) {
@@ -55,7 +51,7 @@ if (isset($_SESSION['user'])) {
 
 
 
-        $data = ['status' => 'success'];
+
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($data);
 
