@@ -325,6 +325,7 @@ function checkToken($password, $token)
         $targetData = $result[0]['id'];
         sqlUpdate($table, $params, $target, $targetData);
         sqlUpdate($table2, $params2, $target2, $token);
+        header('Location: login.php');
         return "Successfully changed your password <br>";
     } else {
 
@@ -388,7 +389,7 @@ function getFriends($user)
 
 function getGroups($user)
 {
-    $query = "SELECT group_user_id, group_id , group_name FROM groups, groups_and_users, users WHERE group_user_id = '$user' AND group_user_id = users.id AND group_id = groups.id ORDER BY group_name";
+    $query = "SELECT groups.id ,group_user_id, group_id , group_name FROM groups, groups_and_users, users WHERE group_user_id = '$user' AND group_user_id = users.id AND group_id = groups.id ORDER BY group_name";
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
@@ -402,8 +403,9 @@ function searchUsers($user, $mainUserId)
 {
     $userLowCase = strtolower($user);
 
-    $query = "SELECT id, firstname, lastname, profile_picture, IF(friend_request.request_status>0, 1, 0) as request_pending, 
-              IF(friend_list.main_user_id>0, 1, 0) AS is_friend
+    $query = "SELECT id, firstname, lastname, profile_picture, friend_request.request_status, 
+              IF(friend_list.main_user_id>0, 1, 0) AS is_friend,
+              IF(friend_request.from_user_id = $mainUserId, 1, 0) AS request_to
               FROM users
               LEFT JOIN friend_list
               ON users.id = friend_list.friend_user_id AND friend_list.main_user_id = $mainUserId
@@ -411,6 +413,7 @@ function searchUsers($user, $mainUserId)
               ON users.id = friend_request.to_user_id AND friend_request.from_user_id = $mainUserId 
               WHERE  (LOWER(firstname) LIKE '%$userLowCase%' or LOWER(lastname) LIKE '%$userLowCase%') AND users.status = 1 
               AND users.id <> '$mainUserId' AND users.private_account = 0 GROUP BY users.id;";
+    //var_dump($query); die;
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
@@ -426,13 +429,13 @@ function searchGroups($group, $userId)
 
     $query = "SELECT groups.id, group_name,
 			  IF(groups_and_users.group_user_id>0, 1, 0) AS member, 
-			  IF(group_join_request.from_user_id>0, 1, 0) as join_request
+			  IF(group_join_request.user_id>0, 1, 0) as join_request
               FROM groups
               LEFT JOIN groups_and_users
               ON groups_and_users.group_id = groups.id  AND groups_and_users.group_user_id = $userId
               LEFT JOIN group_join_request
-              ON group_join_request.group_id = groups.id AND group_join_request.from_user_id = $userId
-              WHERE groups.is_private = 0 AND LOWER(group_name) LIKE '%$group%' GROUP BY groups.id;";
+              ON group_join_request.group_id = groups.id AND group_join_request.user_id = $userId
+              WHERE groups.is_private = 0 AND LOWER(group_name) LIKE '%$groupLowCase%' GROUP BY groups.id;";
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
@@ -452,7 +455,7 @@ function friendDelete($userId, $friendId)
 function friendAdd($userId, $friendId)
 {
     $currentTime = date("Y-m-d H:i:s");
-    sqlInsert('friend_request', ['from_user_id' => $userId, 'to_user_id' => $friendId, 'request_date' => $currentTime, 'request_status' => 0]);
+    sqlInsert('friend_request', ['from_user_id' => $userId, 'to_user_id' => $friendId, 'request_date' => $currentTime, 'request_status' => 1]);
 }
 
 function removeRequest($userId, $friendId)
@@ -468,12 +471,12 @@ function leaveGroup($userId, $groupId)
 function joinGroup($userId, $groupId)
 {
     $currentTime = date("Y-m-d H:i:s");
-    sqlInsert('group_join_request', ['from_user_id' => $userId, 'group_id' => $groupId, 'request_date' => $currentTime, 'request_status' => 1]);
+    sqlInsert('group_join_request', ['user_id' => $userId, 'group_id' => $groupId, 'request_date' => $currentTime, 'request_status' => 1, 'request_type' => 1]);
 }
 
 function removeJoinRequest($userId, $groupId)
 {
-    sqlDelete('group_join_request', ['from_user_id' => $userId, 'group_id' => $groupId]);
+    sqlDelete('group_join_request', ['user_id' => $userId, 'group_id' => $groupId, 'request_type' => 1]);
 }
 
 function deleteUser($userId)
@@ -579,11 +582,67 @@ EOF;
     return $reactions;
 }
 
-function requestGet($MainUserId)
+function friendRequestGet($MainUserId)
 {
-    $query = "SELECT friend_request.from_user_id, request_date, firstname, lastname  FROM  friend_request
+    $query = "SELECT friend_request.from_user_id, request_status, firstname, lastname  FROM  friend_request
               LEFT JOIN users
               ON friend_request.from_user_id = users.id  
-              WHERE users.status = 1 AND friend_request.to_user_id = ".$MainUserId." AND friend_request.request_status = 0 ";
+              WHERE users.status = 1 AND friend_request.to_user_id = ".$MainUserId." AND friend_request.request_status = 1 ";
+    $result = sqlResult($query);
+    if (isset($result)) {
+        return $result;
+    } else {
+        return "No requests found";
+    }
 
+}
+
+function requestDecision($mainUserId, $requestUserId, $input)
+{
+    if ($input == 1) {
+        $currentTime = date("Y-m-d H:i:s");
+        sqlInsert('friend_list', ['main_user_id' => $mainUserId, 'friend_user_id' => $requestUserId, 'friends_from' => $currentTime]);
+        sqlInsert('friend_list', ['main_user_id' => $requestUserId, 'friend_user_id' => $mainUserId, 'friends_from' => $currentTime]);
+        sqlDelete('friend_request',['from_user_id' => $requestUserId, 'to_user_id' => $mainUserId]);
+    }
+    else {
+        sqlDelete('friend_request',['from_user_id' => $requestUserId, 'to_user_id' => $mainUserId]);
+    }
+
+
+}
+function getUserGroups($userId)
+{
+
+    $query = "SELECT groups.id, groups.group_name
+              FROM groups
+              LEFT JOIN groups_and_users
+              ON groups_and_users.group_id = groups.id  AND groups_and_users.group_user_id = $userId
+              WHERE groups.is_private = 0 AND groups_and_users.group_user_id = '$userId'";
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return $result;
+    } else {
+        return "No groups found";
+    }
+}
+function getUserGroup($userId, $groupId)
+{
+
+    $query = "SELECT groups.id, groups.group_name
+              FROM groups
+              LEFT JOIN groups_and_users
+              ON groups_and_users.group_id = groups.id  AND groups_and_users.group_user_id = $userId
+              WHERE groups.is_private = 0 AND groups_and_users.group_user_id = '$userId' AND groups.id = '$groupId'";
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return $result;
+    } else {
+        return "Return Now";
+    }
+}
+function addGroupPost($userId, $data, $type, $groupId)
+{
+    $currentTime = date("Y-m-d H:i:s");
+    sqlInsert('posts', ['user_id' => $userId, 'post_content' => $data, 'post_type' => $type, 'created_at' => $currentTime, 'updated_at' => $currentTime, 'group_id' => $groupId]);
 }

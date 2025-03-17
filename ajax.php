@@ -36,6 +36,9 @@ if (isset($_SESSION['user'])) {
                 $data['data'] = getPostReactions($postId);
 
                 break;
+            case 'request_process':
+                requestDecision($userid, $_POST['friend_request_id'], $_POST['accept_or_decline']);
+                break;
 //            case 'delete_user':
 //                if ($data == 0) {
 //                    deleteUser($userid);

@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <section class="containers">
         <h3>Friend list</h3>
         <form method="get" action="users.php">
-            <section class="search-bar"><label>Add more:</label> <input class="search-box" type="text" placeholder="Search" name="friendSearch"><input class="search-buttons" type="submit" value="Search"></section>
+            <section class="search-bar"><label>Add more:</label> <input class="search-box" type="search" placeholder="Search" name="friendSearch"><input class="search-buttons" type="submit" value="Search"></section>
         </form>
         <hr>
         <section>
@@ -47,12 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 //var_dump($friendResult);
                 if (isset($friendResult)) {
                     $row = 0;
-                    while ($row < count($friendResult)) {
+                    foreach ($friendResult as $friend) {
                         echo "
             
             
                 <li class='friend-list-li'>
-                <a>  <img src=" . $friendResult[$row]['profile_picture'] . " alt='profile_picture' class='pfp'> <b class='friend-list-a'>" . $friendResult[$row]['firstname'] . " " . $friendResult[$row]['lastname'] . "</b> </a>
+                <a>  <img src=" . $friend['profile_picture'] . " alt='profile_picture' class='pfp'> <b class='friend-list-a'>" . $friend['firstname'] . " " . $friend['lastname'] . "</b> </a>
                 </li>
             
             <hr>
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <section class="containers" id="group-container">
         <h3>Groups</h3>
         <form form method="get" action="groups.php">
-            <section class="search-bar"><label>Join more:</label> <input class="search-box" type="text" placeholder="Search" name="groupSearch"><input class="search-buttons" type="submit" value="Search"></section>
+            <section class="search-bar"><label>Join more:</label> <input class="search-box" type="search" placeholder="Search" name="groupSearch"><input class="search-buttons" type="submit" value="Search"></section>
         </form>
         <hr>
         <section>
@@ -76,12 +76,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 //var_dump($groupResult);
                 if (isset($groupResult)) {
                     $row = 0;
-                    while ($row < count($groupResult)) {
+                    foreach ($groupResult as $group) {
                         echo "
             
             
                 <li class='group-li'>
-                <a>" . $groupResult[$row]['group_name'] . " </a>
+                <a href='group.php?group=".$group['id']."'>" . $group['group_name'] . " </a>
                 </li>
             
             <hr>
@@ -106,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (isset($postData) && !empty($postData)) {
                         addPost($userid, $postData, 1);
+                        header('Location: dashboard.php');
                     } else {
                         echo "Post is empty";
                     }

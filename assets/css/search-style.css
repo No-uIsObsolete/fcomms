@@ -160,4 +160,133 @@ main > .containers {
     background-color: #842029;
 }
 
+.containers .remove-request {
+    background-color: #58151c;
+}
+.containers .remove-request:hover {
+    background-color: #842029;
+}
+.containers .remove-join-request {
+    background-color: #58151c;
+}
+.containers .remove-join-request:hover {
+    background-color: #842029;
+}
 
+.containers .request-decline {
+    background-color: #58151c;
+}
+.containers .request-decline:hover {
+    background-color: #842029;
+}
+.containers .decline-invite {
+    background-color: #58151c;
+}
+.containers .decline-invite:hover {
+    background-color: #842029;
+}
+
+
+.containers .search-bar {
+    margin-bottom: 5px;
+}
+.containers .search-box {
+    background: #2b2f32;
+    color: #a7acb1;
+    border: none;
+    border-radius: 4px 0 0 4px;
+    transition: 0.25s;
+    padding: 5px;
+}
+.containers .search-buttons{
+    color: #a7acb1;
+    border: none;
+    background: #2b2f32;
+    border-radius: 0 4px 4px 0;
+    transition: 0.25s;
+    height: 26px;
+}
+.containers .search-buttons:hover {
+    background-color: #4d5154;
+    transition: 0.25s;
+    border-left: #a7acb1 1px solid;
+    cursor:pointer;
+}
+.containers .search-box::placeholder {
+    color: #4d5154;
+    transition: 0.25s;
+}
+.containers .search-box:hover {
+    transition: 0.25s;
+    color: white;
+    background-color: #2b2f32;
+
+}
+.containers .search-box:hover::placeholder {
+    transition: 0.25s;
+    color: #a7acb1;
+}
+.containers .search-box:focus {
+    outline: none;
+    border: #a7acb1 1px solid;
+    transition: 0.25s;
+    color: white;
+}
+.containers .search-box:focus::placeholder {
+    color: #a7acb1;
+    transition: 0.25s;
+}
+
+textarea {
+    resize: none;
+    background: #2b2f32;
+    color: #a7acb1;
+    border: none;
+    padding: 10px;
+    border-radius: 4px 0 0 4px;
+    transition: 0.25s;
+}
+textarea::placeholder {
+    color: #4d5154;
+    transition: 0.25s;
+}
+.textarea-section {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+.containers .post-button {
+    color: #a7acb1;
+    width: 75px;
+    height: 68px;
+    border: none;
+    background: #2b2f32;
+    vertical-align: top;
+    border-radius: 0 4px 4px 0;
+    transition: 0.25s;
+}
+.containers .post-button:hover {
+    background-color: #4d5154;
+    transition: 0.25s;
+    border-left: #a7acb1 1px solid;
+    cursor:pointer;
+}
+textarea:hover {
+    transition: 0.25s;
+    color: white;
+
+}
+textarea:hover::placeholder {
+    transition: 0.25s;
+    color: #a7acb1;
+}
+textarea:focus {
+    outline: none;
+    border: #a7acb1 1px solid;
+    transition: 0.25s;
+    color: white;
+}
+textarea:focus::placeholder {
+    color: #a7acb1;
+    transition: 0.25s;
+}

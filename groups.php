@@ -17,9 +17,12 @@ if (isset($_SESSION['user'])) {
     //echo "<pre>";
     //var_dump($list);
 
+    $grouplist = getUserGroups($userid);
 
-
-
+    $invite_requests = [];
+    foreach ($grouplist as $invite) {
+        $invite_requests[$invite['from_user_id']] = $invite;
+    }
 }
 else {
     header('Location: index.php');
@@ -44,31 +47,38 @@ else {
 </head>
 <body>
 <header><h1>FComms</h1></header>
-<aside></aside>
+<aside class="group-box"><section class="containers">
+        <form form method="get" action="groups.php">
+            <section class="search-bar"><label>Search Groups:</label> <input class="search-box" type="search" placeholder="Search" name="groupSearch"><input class="search-buttons" type="submit" value="Search"></section>
+            <h3>Search Results:</h3> <hr>
+
+        </form>
+    </section> </aside>
 <main>
-
-        <section class="containers">
-            <h3>Groups:</h3>
-            <?php
-            foreach ($list as $i=> $group) {
-                if ($group['member'] == 1) {
-                    echo '<br>'. $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Leave Group' class='leave-group'> 
+    <section class="containers"><?php
+        foreach ($list as $i=> $group) {
+            if ($group['member'] == 1) {
+                echo '<br><section>'. $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Leave Group' class='leave-group'> 
                     </section><br><hr>";
-                }
-                elseif ($group['join_request'] == 1) {
-                    echo '<br>'. $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Request pending' class='blocked' disabled> 
-                    <input type='button' data-group-id='" . $group['id'] . "' value='Remove request' class='remove-join-request'></section><br><hr>";
-                }
-                else {
-                    echo '<br>'. $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Join Group' class='join-group'> 
-                    </section><br><hr>";
-                }
             }
-            ?>
-        </section>
-
+            elseif ($group['join_request'] == 1) {
+                echo '<br><section>'. $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Request pending' class='blocked' disabled> 
+                    <input type='button' data-group-id='" . $group['id'] . "' value='Remove request' class='remove-join-request'></section><br><hr>";
+            }
+            elseif (isset($invite_requests[$group['id']])) {
+                echo '<br><section>'. $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Accept Invite' class='accept-invite'> 
+                    <input type='button' data-group-id='" . $group['id'] . "' value='Decline Invite' class='decline-invite'></section><br><hr>";
+            }
+            else {
+                echo '<br><section>'. $group['group_name'] . " <input type='button' data-group-id='" . $group['id'] . "' value='Join Group' class='join-group'> 
+                    </section><br><hr>";
+            }
+        }
+        ?></section>
 </main>
-<aside></aside>
+<aside> <section class="containers">
+
+    </section></aside>
 <footer><script src="assets/js/jquery.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
@@ -140,7 +150,50 @@ else {
                         }
                     });
             });
+            $(document).on('click', '.invite-request-accept', function(){
+                let obj = $(this)
+                console.log($(this).attr('data-group-id'))
+                $.post("ajax.php",
+                    {
+                        invite_request_id: $(this).attr('data-group-id'),
+                        accept_or_decline: 1,
+                        action: "request_process"
+                    },
+                    function(data){
+                        console.log(data.status);
+                        if (typeof data.status !== 'undefined' && data.status === 'success')
+                        {
 
+
+                            obj.prev().remove()
+
+                            alert('Success')
+
+                        }
+                    });
+            });
+            $(document).on('click', '.invite-request-decline', function(){
+                let obj = $(this)
+                console.log($(this).attr('data-group-id'))
+                $.post("ajax.php",
+                    {
+                        invite_request_id: $(this).attr('data-group-id'),
+                        accept_or_decline: 0,
+                        action: "request_process"
+                    },
+                    function(data){
+                        console.log(data.status);
+                        if (typeof data.status !== 'undefined' && data.status === 'success')
+                        {
+
+
+                            obj.prev().remove()
+
+                            alert('Success')
+
+                        }
+                    });
+            });
 
 
         });
