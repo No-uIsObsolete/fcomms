@@ -56,9 +56,9 @@ else {
 
 
 window.addEventListener("load", function () {
-    setTimeout(function(){
+
         location.href = '<?php echo $website; ?>';
-    }, 8000);
+
     setTimeout(function(){
 
         document.title = 'Checking.';

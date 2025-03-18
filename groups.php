@@ -18,7 +18,6 @@ if (isset($_SESSION['user'])) {
     //var_dump($list);
 
     $grouplist = getUserGroups($userid);
-
     $invite_requests = [];
     foreach ($grouplist as $invite) {
         $invite_requests[$invite['from_user_id']] = $invite;

@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <ul class='friend-list-ul'>
                 <?php
                 //var_dump($friendResult);
-                if (isset($friendResult)) {
+                if (isset($friendResult) ) {
                     $row = 0;
                     foreach ($friendResult as $friend) {
                         echo "

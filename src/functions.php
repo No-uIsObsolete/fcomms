@@ -64,6 +64,17 @@ function sqlUpdate($table, $params, $target, $targetData)
     $sql = mysqli_query($con, $query);
 
 }
+function sqlUpdateMultiple($table, $params, $target)
+{
+    $con = connect();
+
+
+    $query = "UPDATE $table
+                SET $params
+                WHERE $target";
+    $sql = mysqli_query($con, $query);
+
+}
 
 function sqlDelete($table, $params)
 {
@@ -379,23 +390,13 @@ function SendPasswordResetEmail($token)
 function getFriends($user)
 {
     $query = "SELECT main_user_id, friend_user_id, firstname, lastname, profile_picture FROM friend_list, users WHERE main_user_id = '$user' AND friend_user_id = users.id AND status = 1 ORDER BY firstname";
-    $result = sqlResult($query);
-    if (isset($result[0])) {
-        return $result;
-    } else {
-        return "No friends available";
-    }
+    return sqlResult($query);
 }
 
 function getGroups($user)
 {
     $query = "SELECT groups.id ,group_user_id, group_id , group_name FROM groups, groups_and_users, users WHERE group_user_id = '$user' AND group_user_id = users.id AND group_id = groups.id ORDER BY group_name";
-    $result = sqlResult($query);
-    if (isset($result[0])) {
-        return $result;
-    } else {
-        return "No groups available";
-    }
+    return sqlResult($query);
 }
 
 
@@ -519,7 +520,7 @@ function getPosts($mainUserId)
               ON posts.id = reactions.post_id AND reactions.enabled = 1
               LEFT JOIN reaction_types rt
               ON reactions.type_id = rt.id
-              WHERE (posts.user_id IN(SELECT friend_user_id FROM friend_list WHERE main_user_id = $mainUserId) OR posts.user_id = $mainUserId) AND users.status = 1 GROUP BY posts.id ORDER BY posts.created_at DESC
+              WHERE (posts.user_id IN(SELECT friend_user_id FROM friend_list WHERE main_user_id = $mainUserId) OR posts.user_id = $mainUserId) AND users.status = 1 AND post_type = 1 GROUP BY posts.id ORDER BY posts.created_at DESC
               ";
 //    echo "<pre>";
 //    var_dump($query); die;
@@ -614,11 +615,13 @@ function requestDecision($mainUserId, $requestUserId, $input)
 function getUserGroups($userId)
 {
 
-    $query = "SELECT groups.id, groups.group_name
+    $query = "SELECT groups.id, groups.group_name, group_join_request.from_user_id, group_join_request.request_type
               FROM groups
               LEFT JOIN groups_and_users
               ON groups_and_users.group_id = groups.id  AND groups_and_users.group_user_id = $userId
-              WHERE groups.is_private = 0 AND groups_and_users.group_user_id = '$userId'";
+              LEFT JOIN group_join_request
+              ON group_join_request.group_id = groups.id
+              AND groups_and_users.group_user_id = '$userId'";
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
@@ -629,11 +632,11 @@ function getUserGroups($userId)
 function getUserGroup($userId, $groupId)
 {
 
-    $query = "SELECT groups.id, groups.group_name
+    $query = "SELECT groups.id, groups.group_name, groups.is_private
               FROM groups
               LEFT JOIN groups_and_users
               ON groups_and_users.group_id = groups.id  AND groups_and_users.group_user_id = $userId
-              WHERE groups.is_private = 0 AND groups_and_users.group_user_id = '$userId' AND groups.id = '$groupId'";
+              WHERE groups_and_users.group_user_id = '$userId' AND groups.id = '$groupId'";
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
@@ -645,4 +648,83 @@ function addGroupPost($userId, $data, $type, $groupId)
 {
     $currentTime = date("Y-m-d H:i:s");
     sqlInsert('posts', ['user_id' => $userId, 'post_content' => $data, 'post_type' => $type, 'created_at' => $currentTime, 'updated_at' => $currentTime, 'group_id' => $groupId]);
+}
+function getGroupPosts($groupId)
+{
+
+
+    $reactionCols = array_map(function ($item) {
+        return "SUM(CASE WHEN rt.id = {$item['id']} THEN 1 ELSE 0 END) AS {$item['name']}_reaction";
+    }, getReactionTypes());
+
+    $query = "SELECT posts.id, users.id AS post_user_id, post_content, post_type, posts.created_at, firstname, lastname, profile_picture , " . implode(', ', $reactionCols) . "
+              FROM posts
+              LEFT JOIN users 
+              ON posts.user_id = users.id
+              LEFT JOIN reactions
+              ON posts.id = reactions.post_id AND reactions.enabled = 1
+              LEFT JOIN reaction_types rt
+              ON reactions.type_id = rt.id
+              LEFT JOIN groups_and_users gu
+              ON gu.group_user_id = users.id
+              WHERE gu.group_id = $groupId AND posts.group_id = $groupId AND users.status = 1 AND post_type = 2 GROUP BY posts.id ORDER BY posts.created_at DESC
+              ";
+//    echo "<pre>";
+//    var_dump($query); die;
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return $result;
+    } else {
+        return "No posts found";
+    }
+}
+
+function checkUsers($groupId)
+{
+    $query = "SELECT users.id, firstname, lastname, profile_picture, is_admin
+              FROM groups_and_users
+              LEFT JOIN users
+              ON groups_and_users.group_user_id = users.id
+              LEFT JOIN groups 
+              ON groups_and_users.group_id = groups.id
+              WHERE group_id = ".$groupId."
+              ORDER BY is_admin";
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return $result;
+    }
+}
+
+function checkRole($userid, $groupId)
+{
+    $query = "SELECT is_admin
+              FROM groups_and_users
+              LEFT JOIN users
+              ON groups_and_users.group_user_id = users.id
+              LEFT JOIN groups 
+              ON groups_and_users.group_id = groups.id
+              WHERE users.id = ".$userid." AND groups.id = ".$groupId." ";
+
+    $result = sqlResult($query);
+    if (isset($result[0])) {
+        return $result;
+    }
+}
+
+function editGroup($groupId, $isPrivate, $groupName)
+{
+    $currentTime = date("Y-m-d H:i:s");
+    $target = "groups.id";
+    $params = "updated_at = '$currentTime', group_name = '$groupName', is_private = '$isPrivate'";
+    sqlUpdate('groups', $params, $target, $groupId);
+}
+function groupAdminSwitch($admin, $userId, $groupId)
+{
+    $target = "groups_and_users.group_id = '$groupId', groups_and_users.group_user_id = '$userId'";
+    $params = "is_admin = '$admin'";
+    sqlUpdateMultiple('groups_and_users', $params, $target);
+}
+function groupRemoveUser($groupId, $userId)
+{
+sqlDelete('groups_and_users', ['group_user_id' => $userId, 'group_id' => $groupId]);
 }

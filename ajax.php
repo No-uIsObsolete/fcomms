@@ -39,6 +39,50 @@ if (isset($_SESSION['user'])) {
             case 'request_process':
                 requestDecision($userid, $_POST['friend_request_id'], $_POST['accept_or_decline']);
                 break;
+            case 'kick':
+                $modifUserId = $_POST['user_id'];
+                $groupId = $_POST['group_id'];
+                $result = checkRole($userid, $groupId);
+                if ($result[0]['is_admin'] < 2) {
+
+                    groupRemoveUser($groupId, $modifUserId);
+
+                }
+                else {
+                    $data['status'] = "FAILURE!!!1!";
+                }
+                break;
+            case 'member':
+                $modifUserId = $_POST['user_id'];
+                $groupId = $_POST['group_id'];
+                $result = checkRole($userid, $groupId);
+                if ($result[0]['is_admin'] === 0) {
+
+
+                    $AdminChange = 2;
+                    groupAdminSwitch($AdminChange, $modifUserId, $groupId);
+                }
+                else {
+                    $data['status'] = "FAILURE!!!1!";
+                }
+
+                break;
+            case 'admin':
+                $modifUserId = $_POST['user_id'];
+                $groupId = $_POST['group_id'];
+                $result = checkRole($userid, $groupId);
+                if ($result[0]['is_admin'] === 0) {
+
+
+                $AdminChange = 1;
+                    groupAdminSwitch($AdminChange, $modifUserId, $groupId);
+                }
+                else {
+                    $data['status'] = "FAILURE!!!1!";
+                }
+
+
+                break;
 //            case 'delete_user':
 //                if ($data == 0) {
 //                    deleteUser($userid);

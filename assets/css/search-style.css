@@ -290,3 +290,50 @@ textarea:focus::placeholder {
     color: #a7acb1;
     transition: 0.25s;
 }
+
+.reactions {
+    margin-top: 5px;
+    width: 15px;
+    height: 15px;
+    filter: invert(100%);
+    transition: 0.25s;
+    -webkit-user-drag: none;
+}
+.reactions:hover {
+    cursor: pointer;
+    filter: invert(80%);
+    transition: 0.25s;
+    transform: scale(0.9);
+    -webkit-user-drag: none;
+}
+.reactions:active {
+    filter: invert(50%);
+    transition: 0.15s;
+    transform: scale(0.5);
+    -webkit-user-drag: none;
+
+}
+
+.admin-view .containers {
+    height: 435px;
+}
+.guest-view .containers {
+    height: 914px;
+}
+
+.pfp {
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    margin-right: 10px;
+    vertical-align: sub;
+    -webkit-user-drag: none;
+}
+
+.role-list-a {
+    vertical-align: super;
+}
+.role-list-a > i {
+    float: right;
+    vertical-align: sub;
+}
