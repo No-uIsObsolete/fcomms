@@ -337,3 +337,30 @@ textarea:focus::placeholder {
     float: right;
     vertical-align: sub;
 }
+.logout-button {
+    background-color: #2b2f32;
+    border-radius: 4px;
+    color: white;
+    text-decoration: none;
+    padding: 5px;
+    float: right;
+    position: absolute;
+    top: 15px;
+    right: 10px
+}
+.logo {
+    font-family: Courier New, monospace;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: whitesmoke;
+    max-width: 50px;
+}
+
+.user-logged-in {
+    color: white;
+    padding: 5px;
+    float: right;
+    position: absolute;
+    top: 15px;
+    right: 100px
+}

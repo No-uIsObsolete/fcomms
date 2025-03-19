@@ -83,6 +83,10 @@ if (isset($_SESSION['user'])) {
 
 
                 break;
+            case 'getChat':
+                $data['data'] = getChatMessages($_POST['from_user_id'], $_POST['to_user_id']);
+                setAsRead($_POST['from_user_id'],  $_POST['to_user_id']);
+                break;
 //            case 'delete_user':
 //                if ($data == 0) {
 //                    deleteUser($userid);
@@ -93,6 +97,10 @@ if (isset($_SESSION['user'])) {
 //            case 'private_account':
 //                    privateAccount($userid, $data);
 //                break;
+            case 'sendMessage':
+                addChatMessage($_POST['from_user_id'],  $_POST['to_user_id'], $_POST['message']);
+                $data['data'] = getChatMessages($_POST['from_user_id'], $_POST['to_user_id']);
+                break;
 
         }
 

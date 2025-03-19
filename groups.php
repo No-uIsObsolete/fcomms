@@ -12,6 +12,8 @@ if (isset($_SESSION['user'])) {
     $result = $_GET['groupSearch'];
 
     $userid = $_SESSION['user']['id'];
+    $userFirstname = $_SESSION['user']['firstname'];
+    $userLastname = $_SESSION['user']['lastname'];
 
     $list = searchGroups($result, $userid);
     //echo "<pre>";
@@ -45,7 +47,7 @@ else {
     <link rel="stylesheet" href="assets/css/search-style.css">
 </head>
 <body>
-<header><h1>FComms</h1></header>
+<header><h1 class="logo">FComms</h1> <section class="user-logged-in"><?php echo $userFirstname." ".$userLastname ?></section> <a class="logout-button" href="/logout.php">Logout</a></header>
 <aside class="group-box"><section class="containers">
         <form form method="get" action="groups.php">
             <section class="search-bar"><label>Search Groups:</label> <input class="search-box" type="search" placeholder="Search" name="groupSearch"><input class="search-buttons" type="submit" value="Search"></section>

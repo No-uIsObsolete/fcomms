@@ -3,29 +3,6 @@
     padding: 0;
     font-family: monospace, "Lucida Console";
 }
-.reactions {
-    margin-top: 5px;
-    width: 15px;
-    height: 15px;
-    filter: invert(100%);
-    transition: 0.25s;
-    -webkit-user-drag: none;
-}
-.reactions:hover {
-    cursor: pointer;
-    filter: invert(80%);
-    transition: 0.25s;
-    transform: scale(0.9);
-    -webkit-user-drag: none;
-}
-.reactions:active {
-    filter: invert(50%);
-    transition: 0.15s;
-    transform: scale(0.5);
-    -webkit-user-drag: none;
-
-}
-
 body {
     background-color: #2b2f32;
 
@@ -37,7 +14,7 @@ header {
     max-width: 100%;
 }
 
-.social-box {
+aside{
     background-color: #2b2f32;
     width: 20%;
     height: 920px;
@@ -45,17 +22,11 @@ header {
 }
 main {
     background-color: #2b2f32;
-    width: 65%;
+    width: 60%;
     height: 960px;
     float: left;
 }
 
-.setting-box {
-    background-color: #2b2f32;
-    width: 15%;
-    height: 920px;
-    float: left;
-}
 footer {
     background-color: #0f5132;
     width: 100%;
@@ -109,53 +80,10 @@ h3 {
 ::-webkit-scrollbar-corner {
     background: transparent;
 }
-
-
-
-.social-box > .containers {
-    height: 435px;
-    margin-right: 2px;
-}
-
-.setting-box > .containers {
-    margin-left: 2px;
-}
-
 main > .containers {
     margin-left: 2px;
     margin-right: 2px;
 }
-#group-container {
-    margin-top: 4px;
-}
-
-.group-ul, .friend-list-ul {
-    list-style-type: none;
-}
-
-.group-li, .friend-list-li {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-.pfp {
-    border-radius: 50%;
-    height: 30px;
-    width: 30px;
-    margin-right: 10px;
-    vertical-align: sub;
-    -webkit-user-drag: none;
-}
-.group-icon {
-    border-radius: 50%;
-    height: 30px;
-    width: 30px;
-    margin-right: 10px;
-    vertical-align: baseline;
-}
-.friend-list-a {
-    vertical-align: super;
-}
-
 textarea {
     resize: none;
     background: #2b2f32;
@@ -174,7 +102,7 @@ textarea::placeholder {
     margin-bottom: 5px;
     text-align: center;
 }
-.post-button {
+.containers .post-button {
     color: #a7acb1;
     width: 75px;
     height: 68px;
@@ -184,7 +112,7 @@ textarea::placeholder {
     border-radius: 0 4px 4px 0;
     transition: 0.25s;
 }
-.post-button:hover {
+.containers .post-button:hover {
     background-color: #4d5154;
     transition: 0.25s;
     border-left: #a7acb1 1px solid;
@@ -209,61 +137,15 @@ textarea:focus::placeholder {
     color: #a7acb1;
     transition: 0.25s;
 }
-.search-bar {
-    margin-bottom: 5px;
+.pfp {
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    margin-right: 10px;
+    vertical-align: sub;
+    -webkit-user-drag: none;
 }
-.search-box {
-    background: #2b2f32;
-    color: #a7acb1;
-    border: none;
-    border-radius: 4px 0 0 4px;
-    transition: 0.25s;
-    padding: 5px;
-}
-.search-buttons{
-    color: #a7acb1;
-    border: none;
-    background: #2b2f32;
-    border-radius: 0 4px 4px 0;
-    transition: 0.25s;
-    height: 26px;
-}
-.search-buttons:hover {
-    background-color: #4d5154;
-    transition: 0.25s;
-    border-left: #a7acb1 1px solid;
-    cursor:pointer;
-}
-.search-box::placeholder {
-    color: #4d5154;
-    transition: 0.25s;
-}
-.search-box:hover {
-    transition: 0.25s;
-    color: white;
 
-}
-.search-box:hover::placeholder {
-    transition: 0.25s;
-    color: #a7acb1;
-}
-.search-box:focus {
-    outline: none;
-    border: #a7acb1 1px solid;
-    transition: 0.25s;
-    color: white;
-}
-.search-box:focus::placeholder {
-    color: #a7acb1;
-    transition: 0.25s;
-}
-.settings {
-    background-color: #2b2f32;
-    border-radius: 4px;
-    color: white;
-    text-decoration: none;
-    padding: 5px;
-}
 .logout-button {
     background-color: #2b2f32;
     border-radius: 4px;
@@ -282,6 +164,7 @@ textarea:focus::placeholder {
     color: whitesmoke;
     max-width: 50px;
 }
+
 .user-logged-in {
     color: white;
     padding: 5px;
@@ -290,7 +173,28 @@ textarea:focus::placeholder {
     top: 15px;
     right: 100px
 }
+
 .lists {
     color: white;
     text-decoration: none;
+}
+
+.friend-list-ul {
+    list-style-type: none;
+}
+.friend-list-li {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.pfp {
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    margin-right: 10px;
+    vertical-align: sub;
+    -webkit-user-drag: none;
+}
+
+.friend-list-a {
+    vertical-align: super;
 }

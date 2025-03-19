@@ -5,6 +5,8 @@ if (isset($_SESSION['user'])) {
     //echo "<pre>";
     //var_dump($_SESSION['user']); die;
     $userid = $_SESSION['user']['id'];
+    $userFirstname = $_SESSION['user']['firstname'];
+    $userLastname = $_SESSION['user']['lastname'];
     $friendResult = getFriends($userid);
     $groupResult = getGroups($userid);
     $postResult = getPosts($userid);
@@ -32,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
 <header>
-    <h1>FComms</h1>
+    <h1 class="logo">FComms</h1> <section class="user-logged-in"><?php echo $userFirstname." ".$userLastname ?></section> <a class="logout-button" href="/logout.php">Logout</a>
 </header>
 <aside class="social-box">
     <section class="containers">
@@ -52,12 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             
                 <li class='friend-list-li'>
-                <a>  <img src=" . $friend['profile_picture'] . " alt='profile_picture' class='pfp'> <b class='friend-list-a'>" . $friend['firstname'] . " " . $friend['lastname'] . "</b> </a>
+                <a class='lists' href='chat.php?friend=".$friend['friend_user_id']."'>  <img src=" . $friend['profile_picture'] . " alt='profile_picture' class='pfp'> <b class='friend-list-a'>" . $friend['firstname'] . " " . $friend['lastname'] . "</b> </a>
                 </li>
             
             <hr>
             ";
-                        $row++;
+
                     }
                 }
                 ?>
@@ -81,12 +83,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             
                 <li class='group-li'>
-                <a href='group.php?group=".$group['id']."'>" . $group['group_name'] . " </a>
+                <a class='lists' href='group.php?group=".$group['id']."'>" . $group['group_name'] . " </a>
                 </li>
             
             <hr>
             ";
-                        $row++;
+
                     }
                 }
 

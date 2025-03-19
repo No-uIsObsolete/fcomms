@@ -9,6 +9,8 @@ if (empty($groupid)) {
 } else {
     if (isset($_SESSION['user'])) {
         $userid = $_SESSION['user']['id'];
+        $userFirstname = $_SESSION['user']['firstname'];
+        $userLastname = $_SESSION['user']['lastname'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -78,7 +80,7 @@ if ($currentRole[0]['is_admin'] == 1 || $currentRole[0]['is_admin'] == 0) {
     <link rel="stylesheet" href="assets/css/search-style.css">
 </head>
 <body>
-<header><h1>FComms</h1></header>
+<header><h1 class="logo">FComms</h1> <section class="user-logged-in"><?php echo $userFirstname." ".$userLastname ?></section> <a class="logout-button" href="/logout.php">Logout</a></header>
 <aside class="group-box">
     <section class="containers">
         <h2><?php echo $grouplist[0]['group_name'] ?></h2>

@@ -72,6 +72,7 @@ function sqlUpdateMultiple($table, $params, $target)
     $query = "UPDATE $table
                 SET $params
                 WHERE $target";
+//    var_dump($query); die;
     $sql = mysqli_query($con, $query);
 
 }
@@ -727,4 +728,45 @@ function groupAdminSwitch($admin, $userId, $groupId)
 function groupRemoveUser($groupId, $userId)
 {
 sqlDelete('groups_and_users', ['group_user_id' => $userId, 'group_id' => $groupId]);
+}
+function checkFriendChat($userId, $friendId)
+{
+    $query = "SELECT id, firstname, lastname, profile_picture
+              FROM users
+              LEFT JOIN friend_list
+              ON friend_list.friend_user_id = users.id 
+              WHERE users.id = '$friendId' AND friend_list.main_user_id = '$userId'";
+
+    return sqlResult($query);
+
+}
+
+function addChatMessage($from_user_id, $to_user_id, $message)
+{
+    $currentTime = date("Y-m-d H:i:s");
+    sqlInsert('messages', ['from_user_id' => $from_user_id, 'to_user_id' => $to_user_id, 'message_content' => $message, 'created_at' => $currentTime, 'updated_at' => $currentTime]);
+}
+function getChatMessages($user1, $user2)
+{
+ $query = "SELECT users_from.id, users_from.firstname, users_from.lastname, msg.from_user_id, msg.to_user_id, message_content, msg.created_at, msg.is_read, msg.read_at
+FROM messages msg
+LEFT JOIN users users_from
+ON  msg.from_user_id = users_from.id
+LEFT JOIN users users_to
+ON msg.to_user_id = users_to.id
+WHERE 
+(
+(msg.to_user_id = $user2 AND msg.from_user_id = $user1)
+OR
+(msg.to_user_id = $user1 AND msg.from_user_id = $user2)
+)
+ ORDER BY msg.created_at DESC ";
+     return sqlResult($query);
+}
+function setAsRead($userId, $friendId)
+{
+    $currentTime = date("Y-m-d H:i:s");
+    $target = "from_user_id = '$friendId' AND to_user_id = '$userId' AND is_read = '0'";
+    $params = "is_read = '1', read_at = '$currentTime'";
+    sqlUpdateMultiple('messages', $params, $target);
 }

@@ -12,6 +12,8 @@ if (isset($_SESSION['user'])) {
     $result = $_GET['friendSearch'];
 
     $userid = $_SESSION['user']['id'];
+    $userFirstname = $_SESSION['user']['firstname'];
+    $userLastname = $_SESSION['user']['lastname'];
 
     $list = searchUsers($result, $userid);
     //echo "<pre>";
@@ -58,7 +60,7 @@ else {
     <link rel="stylesheet" href="assets/css/search-style.css">
 </head>
 <body>
-<header><h1>FComms</h1></header>
+<header><h1 class="logo">FComms</h1> <section class="user-logged-in"><?php echo $userFirstname." ".$userLastname ?></section> <a class="logout-button" href="/logout.php">Logout</a></header>
 <aside><section class="containers">
         <form method="get" action="users.php">
             <section class="search-bar"><label>Search Users:</label> <input class="search-box" type="search" placeholder="Search" name="friendSearch"><input class="search-buttons" type="submit" value="Search"></section>
