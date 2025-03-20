@@ -513,7 +513,7 @@ function getPosts($mainUserId)
         return "SUM(CASE WHEN rt.id = {$item['id']} THEN 1 ELSE 0 END) AS {$item['name']}_reaction";
     }, getReactionTypes());
 
-    $query = "SELECT posts.id, users.id AS post_user_id, post_content, post_type, posts.created_at, firstname, lastname, profile_picture , " . implode(', ', $reactionCols) . "
+    $query = "SELECT COUNT(comments.id) AS comment_count, posts.id, users.id AS post_user_id, post_content, post_type, posts.created_at, firstname, lastname, profile_picture , " . implode(', ', $reactionCols) . "
               FROM posts
               LEFT JOIN users 
               ON posts.user_id = users.id
@@ -521,10 +521,12 @@ function getPosts($mainUserId)
               ON posts.id = reactions.post_id AND reactions.enabled = 1
               LEFT JOIN reaction_types rt
               ON reactions.type_id = rt.id
+              LEFT JOIN comments
+              ON posts.id = comments.post_id
               WHERE (posts.user_id IN(SELECT friend_user_id FROM friend_list WHERE main_user_id = $mainUserId) OR posts.user_id = $mainUserId) AND users.status = 1 AND post_type = 1 GROUP BY posts.id ORDER BY posts.created_at DESC
               ";
-//    echo "<pre>";
-//    var_dump($query); die;
+    echo "<pre>";
+    var_dump($query); die;
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
@@ -769,4 +771,47 @@ function setAsRead($userId, $friendId)
     $target = "from_user_id = '$friendId' AND to_user_id = '$userId' AND is_read = '0'";
     $params = "is_read = '1', read_at = '$currentTime'";
     sqlUpdateMultiple('messages', $params, $target);
+}
+function getComments($post){
+
+    $query = "SELECT cmt.id, cmt.parent_id, cmt.post_id, cmt.user_id, usr.firstname, usr.lastname, cmt.content, cmt.created_at  
+FROM comments cmt
+LEFT JOIN users usr
+ON cmt.user_id = usr.id
+LEFT JOIN posts pst 
+ON cmt.post_id = pst.id
+WHERE cmt.post_id = $post
+ORDER BY cmt.created_at;";
+
+   return sqlResult($query);
+
+
+}
+
+function buildTree(array $comments, $parentId = null) {
+    $branch = [];
+    foreach ($comments as $comment) {
+        if ($comment['parent_id'] == $parentId) {
+            $children = buildTree($comments, $comment['id']);
+            if ($children) {
+                $comment['replies'] = $children;
+            }
+            $branch[] = $comment;
+        }
+    }
+    return $branch;
+}
+
+function renderComments($commentsTree) {
+    $html = '<ul>';
+    foreach ($commentsTree as $comment) {
+        $html .= '<li>';
+        $html .= '<strong>' . $comment['firstname'] .' '. $comment['lastname'] . '</strong><br><sup>'.$comment['created_at'].'</sup><br> ' . $comment['content'];
+        if (!empty($comment['replies'])) {
+            $html .= renderComments($comment['replies']);
+        }
+        $html .= '<br></li> ';
+    }
+    $html .= '</ul>';
+    return $html;
 }

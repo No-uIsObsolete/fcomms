@@ -1,7 +1,9 @@
 * {
+    font-family: monospace, "Lucida Console";
+}
+body {
     margin: 0;
     padding: 0;
-    font-family: monospace, "Lucida Console";
 }
 .reactions {
     margin-top: 5px;
@@ -73,6 +75,12 @@ h1, h2 {
 h3 {
     font-weight: bold;
 }
+h1, h2, h3, h4, h5{
+    padding: 0;
+    margin: 0;
+}
+
+
 
 .containers {
     background-color: dimgray;
@@ -131,11 +139,14 @@ main > .containers {
 
 .group-ul, .friend-list-ul {
     list-style-type: none;
+    padding: 0;
 }
 
 .group-li, .friend-list-li {
     margin-top: 10px;
     margin-bottom: 10px;
+
+    padding: 0;
 }
 .pfp {
     border-radius: 50%;

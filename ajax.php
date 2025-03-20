@@ -101,6 +101,21 @@ if (isset($_SESSION['user'])) {
                 addChatMessage($_POST['from_user_id'],  $_POST['to_user_id'], $_POST['message']);
                 $data['data'] = getChatMessages($_POST['from_user_id'], $_POST['to_user_id']);
                 break;
+            case 'addComment':
+                $post_id = $_POST['post_id'];
+
+
+                $data['dataPostId'] = $post_id;
+                break;
+            case 'loadComment':
+                $post_id = $_POST['post_id'];
+                $comments = getComments($post_id);
+                $commentsTree = buildTree($comments);
+                $commentsContent = renderComments($commentsTree);
+
+                $data['dataPostId'] = $post_id;
+                $data['content'] = $commentsContent;
+                break;
 
         }
 

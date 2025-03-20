@@ -11,6 +11,7 @@ if (isset($_SESSION['user'])) {
     $groupResult = getGroups($userid);
     $postResult = getPosts($userid);
 
+
 } else {
     header('Location: index.php');
 }
@@ -131,6 +132,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                         echo '<img class="reactions" src="' . $reactionType['icon'] . '" like-type-id="' . $reactionType['id'] . '" post-id="' . $post["id"] . '"> ';
                     }
+                    echo '<br>';
+                    $comments = getComments($post["id"]);
+
+                    if ( !empty($comments) ) {
+
+                    echo  '<section comments-for="'.$post["id"].'" class="commentLoader" action="loadComment"> <sub> <strong> &#8226; </strong> Load Comments </sub> </section>
+                    <section style="display: none;" post-id="'.$post['id'].'" > <div comment="'.$post["id"].'"></div>
+                     <input type="text" add-comment-to="'.$post['id'].'"><button>Submit</button></section>';
+                    }
+                    else {
+                        echo '<section comments-for="'.$post["id"].'" class="commentAdd" action="addComment"> <sub> <strong> + </strong> Add Comment</sub> </section>
+                        <section style="display: none;" post-id="'.$post['id'].'" ><input type="text" add-comment-to="'.$post['id'].'"><button>Submit</button></section>';
+                    }
+
+
+
+
                     echo '</section></section><hr>';
                 }
 
@@ -178,6 +196,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     });
             });
+
+
+
+
+            $(document).on('click', 'section[action="loadComment"]', function () {
+                let post_id = $(this).attr('comments-for')
+                let action = $(this).attr('action')
+                $('section[post-id="'+post_id+'"]').toggle()
+                $.post("ajax.php",
+                    {
+                        post_id: post_id,
+                        action: action
+                    },
+                    function (data) {
+
+                    $('div[comment="'+post_id+'"]').html(data.content)
+
+                    });
+            });
+
+            $(document).on('click', 'section[action="addComment"]', function () {
+                let post_id = $(this).attr('comments-for')
+                let action = $(this).attr('action')
+                $('section[post-id="'+post_id+'"]').toggle()
+                $.post("ajax.php",
+                    {
+                        action: action
+                    },
+                    function (data) {
+
+
+
+                    });
+            });
+
+
+
+
+
+
         });
 
 
