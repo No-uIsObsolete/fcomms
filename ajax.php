@@ -117,6 +117,12 @@ if (isset($_SESSION['user'])) {
                 $data['content'] = $commentsContent;
                 break;
 
+            case 'add_post':
+                $postData = $_POST['post_content'];
+                    addPost($userid, $postData, 1);
+
+                break;
+
         }
 
 

@@ -16,7 +16,7 @@ if (isset($_SESSION['user'])) {
     header('Location: index.php');
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $postData = $_POST['postTextArea'];
+    //$postData = $_POST['postTextArea'];
 }
 
 
@@ -24,15 +24,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!doctype html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard</title>
     <link rel="stylesheet" href="/assets/css/dashboard-style.css">
+    <link
+            href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css"
+            rel="stylesheet"
+    />
+
+
+
 
 </head>
 <body>
+
+
 
 <header>
     <h1 class="logo">FComms</h1> <section class="user-logged-in"><?php echo $userFirstname." ".$userLastname ?></section> <a class="logout-button" href="/logout.php">Logout</a>
@@ -103,19 +113,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h3>Feed</h3> <br>
         <section>
             <hr>
-            <form method="post" action="/dashboard.php">
-                <section class="textarea-section"><textarea name="postTextArea" placeholder="Your post here" cols="144" rows="3"></textarea><input type="submit" value="-->" class="post-button"> </section>
+<!--            <form method="post" action="/dashboard.php">-->
+                <section class="textarea-section"><!-- Create the toolbar container -->
+                    <div id="toolbar">
+<!--                        <button class="ql-bold">Bold</button>-->
+<!--                        <button class="ql-italic">Italic</button>-->
+                    </div>
+
+                    <!-- Create the editor container -->
+                    <div id="editor" name="postTextArea" >
+                        <p>Hello World!</p>
+                        <p>Some initial <strong>bold</strong> text</p>
+                        <p><br /></p>
+                    </div>
+<!--                    <textarea name="postTextArea" placeholder="Your post here" cols="144" rows="3"></textarea>-->
+                    <button type="submit" value="submitPost" class="feed-post-button"> --> </button></section>
                 <?php
-                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                    if (isset($postData) && !empty($postData)) {
-                        addPost($userid, $postData, 1);
-                        header('Location: dashboard.php');
-                    } else {
-                        echo "Post is empty";
-                    }
-                }
+//                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//                    if (isset($postData) && !empty($postData)) {
+//                        addPost($userid, $postData, 1);
+//                        header('Location: dashboard.php');
+//                    } else {
+//                        echo "Post is empty";
+//                    }
+//                }
                 ?>
-            </form>
+<!--            </form>-->
             <hr>
             <?php
 
@@ -171,9 +194,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </section>
 </aside>
 <footer>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
     <script src="assets/js/jquery.js"></script>
     <script type="text/javascript">
+        const quill = new Quill("#editor", {
+            theme: "snow",
+        });
+
         $(document).ready(function () {
+
+
             $(document).on('click', '.reactions', function () {
                 let obj = $(this)
                 $.post("ajax.php",
@@ -197,6 +227,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     });
             });
 
+            $(document).on('click', 'button[value="submitPost"]', function () {
+
+                $.post("ajax.php",
+                    {
+                        post_content: quill.getSemanticHTML(0),
+                        action: "add_post"
+                    },
+                    function (data) {
+                        if (typeof data.status !== 'undefined' && data.status === 'success') {
+                            location.reload()
+                        }
+                    });
+            });
+
 
 
 
@@ -210,9 +254,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         action: action
                     },
                     function (data) {
+                            if (typeof data.status !== 'undefined' && data.status === 'success') {
+                                location.reload()
 
-                    $('div[comment="'+post_id+'"]').html(data.content)
-
+                                $('div[comment="' + post_id + '"]').html(data.content)
+                            }
                     });
             });
 
@@ -225,7 +271,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         action: action
                     },
                     function (data) {
-
+                            if (typeof data.status !== 'undefined' && data.status === 'success') {
+                                location.reload()
+                            }
 
 
                     });

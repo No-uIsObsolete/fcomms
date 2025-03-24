@@ -305,3 +305,19 @@ textarea:focus::placeholder {
     color: white;
     text-decoration: none;
 }
+.feed-post-button {
+    color: #a7acb1;
+    width: 175px;
+    height: 68px;
+    border: none;
+    background: #2b2f32;
+    vertical-align: top;
+    border-radius: 4px;
+    transition: 0.25s;
+    margin-top:10px;
+}
+.feed-post-button:hover {
+    background-color: #4d5154;
+    transition: 0.25s;
+    cursor:pointer;
+}
