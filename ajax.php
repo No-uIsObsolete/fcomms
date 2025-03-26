@@ -123,6 +123,133 @@ if (isset($_SESSION['user'])) {
 
                 break;
 
+            case 'private_account':
+                $checked = $_POST['checked'];
+                if ($checked == 1) {
+                    privateAccount($userid, 1);
+                }
+                else {
+                    privateAccount($userid, 0);
+                }
+                break;
+
+            case 'settings_new_password':
+                $errors = [];
+                $correct = [];
+                $password = trim($_POST['password']);
+                $passwordRepeat = trim($_POST['password_repeat']);
+                $currentPassword = hash('sha256',trim($_POST['current_password']));
+                $hashedPassword = hash('sha256', trim($password));
+                $user_password = checkPassword($userid);
+
+
+
+                if ($currentPassword != $user_password[0]['password']) {
+                    $errors['currentPassword'] = "Current password is incorrect!";
+                }
+                else {
+                    $correct['currentPassword'] = "";
+                }
+
+                if ($hashedPassword == $user_password[0]['password']) {
+                    $errors['password'] = "The password is the same as the current password";
+                }
+                else {
+
+                    if (!passwordValidation($password)) {
+                        $errors['password'] = "Password should be at least 8 characters long\n And should contain atleast:\n one lowercase character, one uppercase character, one number, one special character,";
+                    } else {
+
+                        if (!lowercaseCharactersValidation($password)) {
+                            $lowercase = " one lowercase character";
+                        } else {
+                            $lowercase = "";
+                        }
+
+                        if (!uppercaseCharactersValidation($password)) {
+                            $uppercase = " one uppercase character";
+                        } else {
+                            $uppercase = "";
+                        }
+
+                        if (!numbersValidation($password)) {
+                            $numbers = " one number";
+                        } else {
+                            $numbers = "";
+                        }
+
+                        if (!specialCharactersValidation($password)) {
+                            $special_characters = " one special character";
+                        } else {
+                            $special_characters = "";
+                        }
+
+                        if (!empty($lowercase) || !empty($uppercase) || !empty($numbers) || !empty($special_characters)) {
+                            if ((!empty($uppercase) || !empty($numbers) || !empty($special_characters) )&& !empty($lowercase)) {
+                                $lowercase = $lowercase . ",";
+                            }
+                            if ((!empty($numbers) || !empty($special_characters)) && !empty($uppercase)) {
+                                $uppercase = $uppercase . ",";
+                            }
+                            if (!empty($special_characters) && !empty($numbers)) {
+                                $uppercase = $uppercase . ",";
+                            }
+                            $errors['password'] = "Password should contain atleast:\n" . $lowercase . $uppercase . $numbers . $special_characters .".";
+                        }
+                        else {
+                            $correct['password'] = "";
+                        }
+
+                    }
+                }
+
+
+
+
+
+                if (!empty($passwordRepeat)) {
+
+
+                    if (!passwordRepeatValidation($password, $passwordRepeat)) {
+
+                        $errors['passwordRepeat'] = "Passwords aren't the same";
+
+                    }
+                    else {
+                        $correct['passwordRepeat'] = "";
+                    }
+                }
+                else {
+                    $errors['passwordRepeat'] = "The textarea is empty";
+                }
+
+
+
+
+
+                if (!empty($errors)) {
+//                    foreach ($errors as $key => $val) {
+
+//                    }
+                    $data['status'] = "failure";
+                    $data['errors'] = $errors;
+                    $data['correct'] = $correct;
+                }
+                else {
+
+                    sqlUpdate('users', 'password = "'.$hashedPassword.'"', "id", $userid);
+                    $data['status'] = "success";
+                }
+
+
+
+                break;
+
+
+
+
+
+
         }
 
 

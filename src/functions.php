@@ -815,3 +815,13 @@ function renderComments($commentsTree) {
     $html .= '</ul>';
     return $html;
 }
+
+function checkPrivateAccount($userid) {
+    $query = "SELECT private_account FROM users WHERE id = '$userid'";
+    return sqlResult($query);
+}
+
+function checkPassword($userid) {
+    $query = "SELECT password FROM users WHERE id = '$userid'";
+    return sqlResult($query);
+}
