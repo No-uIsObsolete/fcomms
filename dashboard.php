@@ -261,19 +261,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                     });
             });
-
+/*___________________________________Commit from 21.03.25_________________________________*/
             $(document).on('click', 'section[action="addComment"]', function () {
                 let post_id = $(this).attr('comments-for')
                 let action = $(this).attr('action')
                 $('section[post-id="'+post_id+'"]').toggle()
+
+            });
+            $(document).on('click', 'i[action="replyFor"]', function () {
+                let post_id = $(this).attr('on-post')
+                let action = $(this).attr('action')
+                let comment = $(this).attr('reply-to')
+                $('section[reply-for="'+post_id+'.'+comment+'"]').toggle()
+
+            });
+
+            $(document).on('click', 'button[submit="comment"]', function () {
+                let action = $(this).attr('action')
+                let text = $(this).parent().find('input[type="text"]').val()
+                let post_id = $(this).parent().find('input[type="text"]').attr('add-comment-to')
                 $.post("ajax.php",
                     {
+                        post_id: post_id,
+                        comment: text,
                         action: action
                     },
                     function (data) {
-                            if (typeof data.status !== 'undefined' && data.status === 'success') {
-                                location.reload()
-                            }
+
+
+
+                    });
+            });
+            $(document).on('click', 'button[submit="replyTo"]', function () {
+                let action = $(this).attr('action')
+                let text = $(this).parent().find('input[type="text"]').val()
+                let post_id = $(this).parent().find('input[type="text"]').attr('at_post')
+                let comment_id = $(this).parent().find('input[type="text"]').attr('add-reply-to')
+                $.post("ajax.php",
+                    {
+                        comment_id: comment_id,
+                        post_id: post_id,
+                        comment: text,
+                        action: action
+                    },
+                    function (data) {
+
 
 
                     });

@@ -815,7 +815,20 @@ function renderComments($commentsTree) {
     $html .= '</ul>';
     return $html;
 }
+/*___________________________________Commit from 21.03.25_________________________________*/
+function comment($post_id, $content, $user)
+{
+    $currentTime = date("Y-m-d H:i:s");
+    sqlInsert('comments', ['post_id' => $post_id, 'user_id' => $user, 'content' => $content, 'created_at' => $currentTime, 'updated_at' => $currentTime]);
+}
 
+function replyTo($post_id, $comment_id, $content, $user)
+{
+    $currentTime = date("Y-m-d H:i:s");
+    sqlInsert('comments', ['parent_id' => $comment_id, 'post_id' => $post_id, 'user_id' => $user, 'content' => $content, 'created_at' => $currentTime, 'updated_at' => $currentTime]);
+
+}
+/*_______________________________________________________________________________________*/
 function checkPrivateAccount($userid) {
     $query = "SELECT private_account FROM users WHERE id = '$userid'";
     return sqlResult($query);

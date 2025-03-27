@@ -113,6 +113,23 @@ if (isset($_SESSION['user'])) {
 
                 break;
 
+/*___________________________________Commit from 21.03.25_________________________________*/
+
+            case 'comment':
+                $comment = $_POST['comment'];
+                $post_id = $_POST['post_id'];
+                comment($post_id, $comment, $userid);
+                break;
+
+            case 'replyTo':
+                $comment_id = $_POST['comment_id'];
+                $post_id = $_POST['post_id'];
+                $comment = $_POST['comment'];
+                replyTo($post_id, $comment_id, $comment, $userid);
+                break;
+
+/*_______________________________________________________________________________________*/
+
             case 'private_account':
                 $checked = $_POST['checked'];
                 if ($checked == 1) {
