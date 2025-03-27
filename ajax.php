@@ -87,16 +87,6 @@ if (isset($_SESSION['user'])) {
                 $data['data'] = getChatMessages($_POST['from_user_id'], $_POST['to_user_id']);
                 setAsRead($_POST['from_user_id'],  $_POST['to_user_id']);
                 break;
-//            case 'delete_user':
-//                if ($data == 0) {
-//                    deleteUser($userid);
-//                    session_unset();
-//                    session_destroy();
-//                }
-//                break;
-//            case 'private_account':
-//                    privateAccount($userid, $data);
-//                break;
             case 'sendMessage':
                 addChatMessage($_POST['from_user_id'],  $_POST['to_user_id'], $_POST['message']);
                 $data['data'] = getChatMessages($_POST['from_user_id'], $_POST['to_user_id']);
@@ -141,8 +131,6 @@ if (isset($_SESSION['user'])) {
                 $currentPassword = hash('sha256',trim($_POST['current_password']));
                 $hashedPassword = hash('sha256', trim($password));
                 $user_password = checkPassword($userid);
-
-
 
                 if ($currentPassword != $user_password[0]['password']) {
                     $errors['currentPassword'] = "Current password is incorrect!";
@@ -203,10 +191,6 @@ if (isset($_SESSION['user'])) {
                     }
                 }
 
-
-
-
-
                 if (!empty($passwordRepeat)) {
 
 
@@ -223,47 +207,33 @@ if (isset($_SESSION['user'])) {
                     $errors['passwordRepeat'] = "The textarea is empty";
                 }
 
-
-
-
-
                 if (!empty($errors)) {
-//                    foreach ($errors as $key => $val) {
-
-//                    }
                     $data['status'] = "failure";
                     $data['errors'] = $errors;
                     $data['correct'] = $correct;
                 }
                 else {
-
                     sqlUpdate('users', 'password = "'.$hashedPassword.'"', "id", $userid);
                     $data['status'] = "success";
                 }
+                break;
 
+            case 'update-account-details':
+                $username = $_POST['username'];
+                $email = $_POST['email'];
+                $firstname = $_POST['firstname'];
+                $lastname = $_POST['lastname'];
+                $telephone = $_POST['telephone'];
 
+                $result = checkDetails($userid);
 
                 break;
 
-
-
-
-
-
         }
-
-
-
 
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($data);
-
-
     }
 
 }
-
-
-
-
 ?>

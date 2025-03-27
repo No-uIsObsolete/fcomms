@@ -97,6 +97,7 @@ if (isset($_SESSION['user'])) {
             <input type="text" placeholder="Firstname" name="firstname" class="form-control mb-3 is-valid" value="<?php echo $firstname ?>">
             <input type="text" placeholder="Lastname" name="lastname" class="form-control mb-3 is-valid" value="<?php echo $lastname ?>">
             <input type="tel" placeholder="Telephone Number" class="form-control " name="telephone" value="<?php echo $telephone?>">
+            <button type="submit" action="update-account-details" submit="update">Update</button>
             <hr>
         </div>
 
@@ -262,6 +263,29 @@ if (isset($_SESSION['user'])) {
 
 
                 })
+        });
+        $(document).on('click', 'button[submit="update"]', function () {
+            let action = $(this).attr('action')
+            let username = $('input[name="username"]').attr('value')
+            let email = $('input[name="email"]').attr('value')
+            let firstname = $('input[name="firstname"]').attr('value')
+            let lastname = $('input[name="lastname"]').attr('value')
+            let telephone = $('input[name="telephone"]').attr('value')
+            $.post("ajax.php",
+                {
+                    username: username,
+                    email: email,
+                    firstname: firstname,
+                    lastname: lastname,
+                    telephone: telephone,
+                    action: action
+                },
+                function (data) {
+
+
+
+                })
+
         });
 
 

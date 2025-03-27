@@ -825,3 +825,8 @@ function checkPassword($userid) {
     $query = "SELECT password FROM users WHERE id = '$userid'";
     return sqlResult($query);
 }
+function checkDetails($userid)
+{
+ $query = "SELECT username, email FROM users WHERE id != '$userid'";
+ return sqlResult($query);
+}
