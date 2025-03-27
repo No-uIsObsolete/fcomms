@@ -287,8 +287,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         action: action
                     },
                     function (data) {
-
-
+                        if (typeof data.status !== 'undefined' && data.status === 'success') {
+                            location.reload()
+                        }
 
                     });
             });
@@ -305,12 +306,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         action: action
                     },
                     function (data) {
-
-
+                        if (typeof data.status !== 'undefined' && data.status === 'success') {
+                            location.reload()
+                        }
 
                     });
             });
-
+/*_______________________________________________________________________________________*/
 
 
 

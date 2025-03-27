@@ -7,11 +7,12 @@ if (isset($_SESSION['user'])) {
     $userid = $_SESSION['user']['id'];
     $friendResult = getFriends($userid);
     $groupResult = getGroups($userid);
-    $username = $_SESSION['user']['username'];
-    $firstname = $_SESSION['user']['firstname'];
-    $lastname = $_SESSION['user']['lastname'];
-    $email = $_SESSION['user']['email'];
-    $telephone = $_SESSION['user']['telephone'];
+    $detailResult = checkDetails($userid);
+    $username = $detailResult[0]['username'];
+    $firstname = $detailResult[0]['firstname'];
+    $lastname = $detailResult[0]['lastname'];
+    $email = $detailResult[0]['email'];
+    $telephone = $detailResult[0]['telephone'];
 
     $privateAccount = checkPrivateAccount($userid);
 
@@ -92,12 +93,37 @@ if (isset($_SESSION['user'])) {
             <p class="h3">User Information</p>
         </div>
         <div>
-            <input type="text" placeholder="Username" name="username" class="form-control mb-3 is-valid" value="<?php echo $username ?>">
-            <input type="email" placeholder="Email" name="email" class="form-control mb-3 is-valid" value="<?php echo $email ?>">
-            <input type="text" placeholder="Firstname" name="firstname" class="form-control mb-3 is-valid" value="<?php echo $firstname ?>">
-            <input type="text" placeholder="Lastname" name="lastname" class="form-control mb-3 is-valid" value="<?php echo $lastname ?>">
-            <input type="tel" placeholder="Telephone Number" class="form-control " name="telephone" value="<?php echo $telephone?>">
-            <button type="submit" action="update-account-details" submit="update">Update</button>
+            <div class="mb-3">
+                <input type="text" placeholder="Username" name="username" class="form-control" value="<?php echo $username ?>">
+                <div class="invalid-feedback" feedback="username">
+
+                </div>
+            </div>
+            <div class="mb-3">
+                <input type="email" placeholder="Email" name="email" class="form-control" value="<?php echo $email ?>">
+                <div class="invalid-feedback" feedback="email">
+
+                </div>
+            </div>
+            <div class="mb-3">
+                <input type="text" placeholder="Firstname" name="firstname" class="form-control" value="<?php echo $firstname ?>">
+                <div class="invalid-feedback" feedback="firstname">
+
+                </div>
+            </div>
+            <div class="mb-3">
+                <input type="text" placeholder="Lastname" name="lastname" class="form-control" value="<?php echo $lastname ?>">
+                <div class="invalid-feedback" feedback="lastname">
+
+                </div>
+            </div>
+            <div class="mb-3">
+                <input type="tel" placeholder="Telephone Number" class="form-control" name="telephone" value="<?php echo $telephone?>">
+                <div class="invalid-feedback" feedback="telephone">
+
+                </div>
+            </div>
+            <button type="submit" action="update-account-details" submit="update" class="btn btn-secondary">Update</button>
             <hr>
         </div>
 
@@ -158,7 +184,13 @@ if (isset($_SESSION['user'])) {
             <h4 class="alert-heading">Success!</h4>
             <hr>
             <p class="mb-0">Password was changed successfully <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></p>
-        </div> </div>
+        </div>
+    <div class="alert alert-success float-end m-2" id="detailAlert" role="alert" style="display: none;">
+        <h4 class="alert-heading">Success!</h4>
+        <hr>
+        <p class="mb-0">Account details were changed successfully <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></p>
+    </div> </div>
+
 </div>
 <div class="row">
     <footer class="bg-success text-white col fixed-bottom border-top border-success-subtle">
@@ -242,6 +274,7 @@ if (isset($_SESSION['user'])) {
 
 
                             alert.close();
+                            setTimeout(function(){location.reload()}, 3000);
                         }, 5000);
 
                     }
@@ -282,6 +315,38 @@ if (isset($_SESSION['user'])) {
                 },
                 function (data) {
 
+                    if (typeof data.status !== 'undefined' && data.status === 'success') {
+
+                        $('#detailAlert').show()
+
+                        const alert = bootstrap.Alert.getOrCreateInstance('#detailAlert')
+
+
+                        setTimeout(function(){
+
+
+                            alert.close();
+                            setTimeout(function(){location.reload()}, 3000);
+                        }, 5000);
+
+                    }
+
+
+                    if (typeof data.status !== 'undefined' && data.status === 'failure') {
+
+                        $.each(data.errors, function (key, value) {
+                            $('input[name="'+key+'"]').attr("class", "form-control is-invalid")
+                            $('div[feedback="'+key+'"]').html(value)
+                            $('div[feedback="'+key+'"]').show()
+
+                        })
+                        $.each(data.correct, function (key, value) {
+                            $('input[name="'+key+'"]').attr("class", "form-control is-valid")
+                            $('div[feedback="'+key+'"]').html('')
+                            $('div[feedback="'+key+'"]').hide()
+
+                        })
+                    }
 
 
                 })

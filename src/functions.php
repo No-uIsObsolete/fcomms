@@ -525,8 +525,8 @@ function getPosts($mainUserId)
               ON posts.id = comments.post_id
               WHERE (posts.user_id IN(SELECT friend_user_id FROM friend_list WHERE main_user_id = $mainUserId) OR posts.user_id = $mainUserId) AND users.status = 1 AND post_type = 1 GROUP BY posts.id ORDER BY posts.created_at DESC
               ";
-    echo "<pre>";
-    var_dump($query); die;
+    //echo "<pre>";
+    //var_dump($query); die;
     $result = sqlResult($query);
     if (isset($result[0])) {
         return $result;
@@ -838,8 +838,13 @@ function checkPassword($userid) {
     $query = "SELECT password FROM users WHERE id = '$userid'";
     return sqlResult($query);
 }
+function checkDistinctDetails($userid, $username, $email)
+{
+ $query = "SELECT username, email FROM users WHERE id != '$userid' AND (username = '$username' OR email = '$email') ";
+ return sqlResult($query);
+}
 function checkDetails($userid)
 {
- $query = "SELECT username, email FROM users WHERE id != '$userid'";
+ $query = "SELECT username, email, firstname, lastname, telephone FROM users WHERE id = '$userid'";
  return sqlResult($query);
 }

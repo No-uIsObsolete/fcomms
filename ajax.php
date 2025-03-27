@@ -236,13 +236,101 @@ if (isset($_SESSION['user'])) {
                 break;
 
             case 'update-account-details':
+                $errors = [];
+                $correct = [];
                 $username = $_POST['username'];
                 $email = $_POST['email'];
                 $firstname = $_POST['firstname'];
                 $lastname = $_POST['lastname'];
                 $telephone = $_POST['telephone'];
+                $detailResult = checkDetails($userid);
 
-                $result = checkDetails($userid);
+                $result = checkDistinctDetails($userid, $username, $email);
+                if (!empty($username)){
+
+                if (isset($result[0]['username']) && !empty($result[0]['username'])) {
+                    $errors['username'] = "Username is already taken";
+                }
+                else {
+                    if (!usernameValidation($username)) {
+                        $errors['username'] = "Username is invalid";
+                    }
+                    else
+                    {
+                        $correct['username'] = $username;
+                    }
+                }
+
+                }
+                else {
+                    $errors['username'] = "Username is empty";
+                }
+
+                if (!empty($email)){
+
+                    if (isset($result[0]['email']) && !empty($result[0]['email'])) {
+                        $errors['email'] = "Email is already taken";
+                    }
+                    else {
+                        if (!emailValidation($email)) {
+                            $errors['email'] = "Email is invalid";
+                        }
+                        else {
+                            $correct['email'] = "";
+                        }
+                    }
+
+                }
+                else {
+                    $errors['email'] = "Email is empty";
+                }
+
+                if (!empty($firstname)){
+                    $correct['firstname'] = $firstname;
+                }
+                else {
+                    $errors['firstname'] = "Firstname is empty";
+                }
+                if (!empty($lastname)){
+                    $correct['lastname'] = $lastname;
+                }
+                else {
+                    $errors['lastname'] = "Lastname is empty";
+                }
+
+                if (!telephoneValidation($telephone)) {
+                    $errors['telephone'] = "Telephone number is invalid";
+                }
+                else {
+                    $correct['telephone'] = "";
+                }
+
+                if (!empty($errors)) {
+                    $data['status'] = "failure";
+                    $data['errors'] = $errors;
+                    $data['correct'] = $correct;
+                }
+                else {
+                    if ($username != $detailResult[0]['username']) {
+                    sqlUpdate('users', 'username = "'.$username.'"', "id", $userid);
+                    }
+                    if ($email != $detailResult[0]['email']) {
+                        sqlUpdate('users', 'email = "'.$email.'"', "id", $userid);
+                    }
+                    if ($firstname != $detailResult[0]['firstname']) {
+                        sqlUpdate('firstname', 'firstname = "'.$firstname.'"', "id", $userid);
+                    }
+                    if ($lastname != $detailResult[0]['lastname']) {
+                        sqlUpdate('lastname', 'lastname = "'.$lastname.'"', "id", $userid);
+                    }
+                    if ($telephone != $detailResult[0]['telephone']) {
+                        sqlUpdate('users', 'telephone = "'.$telephone.'"', "id", $userid);
+                    }
+                    $data['status'] = "success";
+                }
+                break;
+
+
 
                 break;
 
